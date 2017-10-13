@@ -4,8 +4,9 @@
 #include "Game.hpp"
 #include "Universe.hpp"
 
-Game::Game(SDL_Surface* screenSurface) :
-    mScreenSurface(screenSurface),
+Game::Game(SDL_Window* window) :
+    mWindow(window),
+    mSurface(SDL_GetWindowSurface(mWindow)),
     mUniverse()
 {
     LOGVV("%s:\tGame constructor\n", __func__);
@@ -26,13 +27,21 @@ void Game::pause(bool state) {
 }
 
 int Game::run() {
-    mUniverse.addStar(0, 0);
+    int window_width, window_height;
+    SDL_GetWindowSize(mWindow, &window_width, &window_height);
+    mUniverse.addStar(window_width/2, window_height/2);
 
     // Game loop
     while (mGameState.run == true) {
         handle_events();
         mUniverse.update();
+
         // TODO: Paint screen surface
+        for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
+            // DRAW
+        }
+
+        SDL_UpdateWindowSurface(mWindow);
     }
 
     return 0;

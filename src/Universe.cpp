@@ -12,6 +12,10 @@ Universe::~Universe() {
     LOGVV("%s:\tUniverse destructor\n", __func__);
 }
 
+std::vector<Particle> Universe::particles() {
+    return mParticles;
+}
+
 void Universe::addParticle(bool fixed, float mass, float r, float x, float y, float vx, float vy) {
     Particle particle;
     particle.fixed = fixed;

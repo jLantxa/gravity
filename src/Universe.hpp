@@ -30,6 +30,8 @@ public:
     Universe();
     virtual ~Universe();
 
+    std::vector<Particle> particles();
+
     void update();
 
     void addParticle(bool fixed, float mass, float r, float x, float y, float vx, float vy);

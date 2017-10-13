@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_Window* gWindow;
-    SDL_Surface* gScreenSurface;
 
     LOGI("Create window (%dx%d)\n", wparams.width, wparams.height);
     gWindow = SDL_CreateWindow (
@@ -40,15 +39,12 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    Game game(gScreenSurface);
+    Game game(gWindow);
 
     LOGV("Running game...\n");
     ret = game.run();
 
     // End of loop
-    LOGV("Freeing screen surface...\n");
-    SDL_FreeSurface(gScreenSurface);
-    gScreenSurface = NULL;
     LOGV("Destroying window... \n", __FUNCTION__);
     SDL_DestroyWindow(gWindow);
     SDL_Quit();

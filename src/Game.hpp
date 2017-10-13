@@ -13,14 +13,16 @@ struct game_state {
 class Game {
 private:
     game_state mGameState;
-    SDL_Surface* mScreenSurface;
+    SDL_Window* mWindow;
+    SDL_Surface* mSurface;
 
     Universe mUniverse;
+    void draw_circle(int x, int y, int radius, SDL_Surface *thescreen, int r, int g, int b);
 
     void handle_events();
 
 public:
-    Game(SDL_Surface* screenSurface);
+    Game(SDL_Window* window);
     virtual ~Game();
 
     int initSDL();
