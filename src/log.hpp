@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 // Log definitions
 #ifndef LOG_LEVEL
 #   define LOG_LEVEL 1

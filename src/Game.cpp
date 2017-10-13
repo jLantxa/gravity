@@ -1,5 +1,4 @@
 #include "SDL2/SDL.h"
-#include <iostream>
 
 #include "log.hpp"
 #include "Game.hpp"
@@ -27,9 +26,13 @@ void Game::pause(bool state) {
 }
 
 int Game::run() {
+    mUniverse.addStar(0, 0);
+
     // Game loop
     while (mGameState.run == true) {
         handle_events();
+        mUniverse.update();
+        // TODO: Paint screen surface
     }
 
     return 0;
