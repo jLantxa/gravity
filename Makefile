@@ -21,7 +21,7 @@ COMPILER_FLAGS=-w
 LINKER_FLAGS=-lSDL2
 LDFLAGS += -DLOG_LEVEL=$(LOG_LEVEL)
 
-OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp
+OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp
 
 all:
 	$(info Building target...)

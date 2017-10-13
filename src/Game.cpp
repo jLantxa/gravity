@@ -3,12 +3,15 @@
 
 #include "log.hpp"
 #include "Game.hpp"
+#include "Universe.hpp"
 
-Game::Game(SDL_Surface* screenSurface) {
+Game::Game(SDL_Surface* screenSurface) :
+    mScreenSurface(screenSurface),
+    mUniverse()
+{
     LOGVV("%s:\tGame constructor\n", __func__);
     mGameState.run =  true;
     mGameState.pause = false;
-    mScreenSurface = screenSurface;
 }
 
 Game::~Game() {

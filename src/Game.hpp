@@ -3,6 +3,8 @@
 
 #include "SDL2/SDL.h"
 
+#include "Universe.hpp"
+
 struct game_state {
     bool run;
     bool pause;
@@ -12,6 +14,8 @@ class Game {
 private:
     game_state mGameState;
     SDL_Surface* mScreenSurface;
+
+    Universe mUniverse;
 
     void handle_events();
 
