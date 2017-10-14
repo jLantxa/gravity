@@ -50,7 +50,7 @@ void Universe::addPlanet(float x, float y, float vx, float vy) {
 void Universe::update() {
     LOGVV("Updating %d particles\n", mParticles.size());
 
-    float k = 2.0/FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
+    float G = 2.0/FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
 
     int i = 0;
     int j = 0;
@@ -87,8 +87,8 @@ void Universe::update() {
                 aix = pj->mass * dx / d3;
                 aiy = pj->mass * dy / d3;
 
-                pi->vx += k * aix;
-                pi->vy += k * aiy;
+                pi->vx += G * aix;
+                pi->vy += G * aiy;
 
                 LOGVV("%s:\ta%d = (%f, %f) [%f]\n", __func__,
                     i, aix, aiy, sqrt(aix*aix + aiy*aiy));

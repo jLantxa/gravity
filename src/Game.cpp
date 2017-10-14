@@ -184,7 +184,8 @@ int Game::run() {
                     break;
 
                 case PARTICLE_PLANET:
-                    particleColor = {0x33, 0x33, 0xFF, 0xFF};
+                    if (bFieldView) particleColor = {0xFF, 0x33, 0x33, 0xFF};
+                    else particleColor = {0x33, 0x33, 0xFF, 0xFF};
                     break;
 
                 default:
@@ -217,8 +218,6 @@ int Game::run() {
 }
 
 void Game::renderField(int subsample_x, int subsample_y) {
-    LOGVV("%s:\tRender field\n", __func__);
-
     int window_width, window_height;
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
 
@@ -234,19 +233,24 @@ void Game::renderField(int subsample_x, int subsample_y) {
                 dy = (y - p->y);
                 d = sqrt(dx*dx + dy*dy);
                 d3 = d*d*d;
-                ax += p->mass * dx / d3;
-                ay += p->mass * dy / d3;
+                ax += p->mass * dx/d3;
+                ay += p->mass * dy/d3;
             }
 
-            float g = ax*ax + ay*ay;
-            if (g > max_g) max_g = g;
+            float g = sqrt(ax*ax + ay*ay);
+            float gth = STAR_MASS / 2000;
+            if (g/gth > 1.0) g = gth;
 
-            SDL_SetRenderDrawColor(mRenderer,
-                    (g <=0xFF)? g : 0xFF,
-                    (g <=0xFF)? 0xFF - g : 0x00,
-                    0x00,
-                    0xFF);
+            int aR = 0;   int aG = 0; int aB = 128;  // RGB for our 1st color
+            int bR = 128; int bG = 128; int bB=0;    // RGB for our 2nd color
 
+            Uint8 red   = (bR - aR) * (g/gth) + aR;
+            Uint8 green = (bG - aG) * (g/gth) + aG;
+            Uint8 blue  = (bB - aB) * (g/gth) + aB;
+
+            Color fieldColor = {red, green, blue, 0xFF};
+
+            setRenderColor(fieldColor);
             if (subsample_x > 1 || subsample_y > 1) {
                 SDL_Rect fillRect = {x, y, subsample_x, subsample_y};
                 SDL_RenderFillRect(mRenderer, &fillRect);
@@ -255,8 +259,6 @@ void Game::renderField(int subsample_x, int subsample_y) {
             }
         }
     }
-
-    LOGD("Max force = %f\n", max_g);
 }
 void Game::handle_events() {
     SDL_Event event;
@@ -286,8 +288,9 @@ void Game::handle_events() {
                 LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
                     bFullScreen? "ON" : "OFF");
             } else if (event.key.keysym.sym == SDLK_g) {
-                LOGD("%s:\tPressed G -> toggle field view %s\n", __func__);
                 bFieldView = !bFieldView;
+                LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
+                        bFieldView? "ON" : "OFF");
             } else if (event.key.keysym.sym == SDLK_UP) {
                 if (bFieldView) {
                     mFieldViewSubsambpleY++;

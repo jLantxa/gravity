@@ -2,7 +2,7 @@
 #define _UNIVERSE_HPP_
 
 #define STAR_MASS   50000
-#define STAR_R      15
+#define STAR_R      12
 #define PLANET_MASS 50
 #define PLANET_R    3
 
