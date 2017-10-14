@@ -9,14 +9,14 @@ TARGET=gravity
 #	LOGE  |	x | x | x | x |   # Error
 #	LOGI  |	x | x | x | x |   #	Information
 ###############################
-LOG_LEVEL=2
+LOG_LEVEL=1
 
 # Window parameters
 WINDOW_WIDTH=1024
 WINDOW_HEIGHT=768
 WINDOW_RESIZABLE=true
 ENABLE_FULLSCREEN=true
-DEFAULT_FULLSCREEN=true
+DEFAULT_FULLSCREEN=false
 
 FIELD_VIEW_SUBSAMPLE_X = 4
 FIELD_VIEW_SUBSAMPLE_Y = 4

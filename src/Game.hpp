@@ -49,6 +49,8 @@ private:
     int mFieldViewSubsambpleY;
     void renderField(int subsample_x, int subsample_y);
 
+    void eraseOOBParticles();
+
 public:
     Game();
     virtual ~Game();

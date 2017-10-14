@@ -2,6 +2,7 @@
 #define _GRAVITY_HPP_
 
 #define WINDOW_TITLE "Gravity simulation"
+#define WINDOW_TITLE_PAUSE "Gravity simulation - PAUSED"
 
 #define FRAMES_PER_SECOND 50
 

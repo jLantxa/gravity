@@ -97,6 +97,20 @@ void Game::pause(bool state) {
     mGameState.pause = state;
 }
 
+void Game::eraseOOBParticles() {
+    int window_width, window_height;
+    SDL_GetWindowSize(mWindow, &window_width, &window_height);
+
+    for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
+        if (p->x < -10*window_width || p->x > 11*window_width ||
+            p->y < -10*window_height || p->x > 11*window_height)
+        {
+            mUniverse.particles().erase(p);
+            LOGI("%s:\tErased OOB particle\n", __func__);
+        }
+    }
+}
+
 bool Game::toggleFullScreen() {
     if (!bFullScreen) {
         // Set fullscreen or window
@@ -216,6 +230,9 @@ int Game::run() {
             SDL_Delay(slack);
         } else {
             LOGE("Negative slack (%d ms) after frame %d\n", slack, frame);
+
+            // This might help recover some frames
+            eraseOOBParticles();
         }
     }
 
@@ -285,6 +302,11 @@ void Game::handle_events() {
                 mGameState.pause = !mGameState.pause;
                 LOGD("%s:\tPressed R -> toggle pause to %s\n", __func__,
                     (mGameState.pause==true)?"true":"false");
+
+                const char* title;
+                if (mGameState.pause) title = WINDOW_TITLE_PAUSE;
+                else title = WINDOW_TITLE;
+                SDL_SetWindowTitle(mWindow, title);
             } else if (event.key.keysym.sym == SDLK_r) {
                 LOGD("%s:\tPressed P -> reset universe\n", __func__);
                 mUniverse.reset();
