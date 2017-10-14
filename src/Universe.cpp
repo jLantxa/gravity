@@ -74,7 +74,7 @@ void Universe::update() {
                 if (d < pi->r + pj->r) {
                     LOGI("Particles %d and %d collided\n", i, j);
                     // Brint the two particles together if not fixed
-                    if (!pi->fixed) {
+                    if (pj->fixed) {
                         collision = true;
                     }
                     continue;
