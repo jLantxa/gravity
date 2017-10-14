@@ -2,9 +2,9 @@
 #define _UNIVERSE_HPP_
 
 #define STAR_MASS   10000
-#define STAR_R      20
+#define STAR_R      15
 #define PLANET_MASS 50
-#define PLANET_R    5
+#define PLANET_R    3
 
 // TODO: Define pixel-to-space transforms
 // TODO: Define ticks-to-time transforms
@@ -13,7 +13,6 @@
 
 struct Particle {
     bool fixed;
-    bool falling;
     float mass;
     float r;
     float x;
@@ -30,7 +29,7 @@ public:
     Universe();
     virtual ~Universe();
 
-    std::vector<Particle> particles();
+    std::vector<Particle>& particles();
 
     void update();
 

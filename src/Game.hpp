@@ -3,29 +3,39 @@
 
 #include "SDL2/SDL.h"
 
+#include "gravity.hpp"
 #include "Universe.hpp"
 
-struct game_state {
+struct GameState {
     bool run;
     bool pause;
 };
 
+struct Launcher {
+    bool clicked;
+    int click_x;
+    int click_y;
+    float x;
+    float y;
+};
+
 class Game {
 private:
-    game_state mGameState;
+    GameState mGameState;
     SDL_Window* mWindow;
-    SDL_Surface* mSurface;
+    SDL_Renderer* mRenderer;
 
     Universe mUniverse;
-    void draw_circle(int x, int y, int radius, SDL_Surface *thescreen, int r, int g, int b);
+    Launcher mLauncher;
+    void drawLauncher();
 
     void handle_events();
 
 public:
-    Game(SDL_Window* window);
+    Game();
     virtual ~Game();
 
-    int initSDL();
+    int init(window_params* wparams);
     int run();
 
     void quit();

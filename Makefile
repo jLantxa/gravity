@@ -9,19 +9,18 @@ TARGET=gravity
 #	LOGE  |	x | x | x | x |   # Error
 #	LOGI  |	x | x | x | x |   #	Information
 ###############################
-LOG_LEVEL=2
+LOG_LEVEL=3
 
 CC=g++
 
 SRC=src
 BUILD=build
 
-
-COMPILER_FLAGS=-w
+COMPILER_FLAGS=-w -O3
 LINKER_FLAGS=-lSDL2 -lm
 LDFLAGS += -DLOG_LEVEL=$(LOG_LEVEL)
 
-OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp
+OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp
 
 all:
 	$(info Building target...)

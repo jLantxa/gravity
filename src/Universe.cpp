@@ -1,3 +1,4 @@
+#include "gravity.hpp"
 #include "Universe.hpp"
 #include "log.hpp"
 
@@ -12,14 +13,13 @@ Universe::~Universe() {
     LOGVV("%s:\tUniverse destructor\n", __func__);
 }
 
-std::vector<Particle> Universe::particles() {
+std::vector<Particle>& Universe::particles() {
     return mParticles;
 }
 
 void Universe::addParticle(bool fixed, float mass, float r, float x, float y, float vx, float vy) {
     Particle particle;
     particle.fixed = fixed;
-    particle.falling =  true;
     particle.mass = mass;
     particle.r = r;
     particle.x = x;
@@ -48,7 +48,8 @@ void Universe::clear() {
 
 void Universe::update() {
     LOGVV("Updating %d particles\n", mParticles.size());
-    float k = 1.0; // Fraction of time [s]*[m/s^2]
+
+    float k = 0.1*1.0/FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
 
     int i = 0;
     int j = 0;
@@ -56,7 +57,9 @@ void Universe::update() {
     // Calculate net accellerations
     float aix, aiy; // Instantaneous accelerations
     float d, d3;    // Distance and cubed distance
+    bool collision;
     for (auto pi = mParticles.begin(); pi < mParticles.end(); pi++, i++) {
+        collision = false;
         if (!pi->fixed)
         {
             for (auto pj = mParticles.begin(); pj < mParticles.end(); pj++, j++) {
@@ -68,29 +71,37 @@ void Universe::update() {
 
                 // Particles collide
                 if (d < pi->r + pj->r) {
-                    // Destroy particle if not fixed
+                    LOGI("Particles %d and %d collided\n", i, j);
+                    // Brint the two particles together if not fixed
                     if (!pi->fixed) {
-                        mParticles.erase(pi);
-                        LOGI("Particle %d was destroyed\n", i);
+                        if (!pj->fixed) {
+                            pi->mass += pj->mass;
+                            pi->r *= sqrt(2);
+                            pi->vx += pj->vx;
+                            pi->vy += pj->vy;
+                            pi->x = (pi->x + pj->x) / 2;
+                            pi->y = (pi->y + pj->y) / 2;
+                            mParticles.erase(pj);
+                        } else {
+                            collision = true;
+                        }
                     }
-
-                    if (!pj->fixed) {
-                        mParticles.erase(pj);
-                        LOGI("Particle %d was destroyed\n", j);
-                    }
-
                     continue;
                 }
 
-                d3 = pow(d, 3);
+                d3 = pow(d, 2);
                 aix = pj->mass * (pj->x - pi->x) / d3;
                 aiy = pj->mass * (pj->y - pi->y) / d3;
 
                 pi->vx += k * aix;
                 pi->vy += k * aiy;
 
-                LOGVV("%s:\ta%d = (%f, %f)", __func__,
-                    i, aix, aiy);
+                LOGVV("%s:\ta%d = (%f, %f) [%f]\n", __func__,
+                    i, aix, aiy, sqrt(aix*aix + aiy*aiy));
+            }
+
+            if (collision) {
+                mParticles.erase(pi);
             }
         }
     }
@@ -104,7 +115,9 @@ void Universe::update() {
         p->y += p->vy;
 
         LOGVV("Update non-fixed particle %d\n", i);
-        LOGVV("%s:\tr%d = (%f, %f)", __func__,
-            i, p->x, p->y);
+        LOGVV("%s:\tr%d = (%f, %f) [%f]\n", __func__,
+            i, p->x, p->y, sqrt(p->x*p->x + p->y*p->y));
+        LOGVV("%s:\tv%d = (%f, %f) [%f]\n", __func__,
+            i, p->vx, p->vy, sqrt(p->vx*p->vx + p->vy*p->vy));
     }
 }
