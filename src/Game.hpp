@@ -33,6 +33,9 @@ private:
     GameState mGameState;
     SDL_Window* mWindow;
     SDL_Renderer* mRenderer;
+    bool bFullScreen = false;
+
+    bool toggleFullScreen();
 
     Universe mUniverse;
     Launcher mLauncher;

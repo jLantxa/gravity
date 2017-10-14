@@ -11,6 +11,42 @@ TARGET=gravity
 ###############################
 LOG_LEVEL=3
 
+# Window parameters
+WINDOW_WIDTH=1024
+WINDOW_HEIGHT=768
+WINDOW_RESIZABLE=true
+ENABLE_FULLSCREEN=true
+DEFAULT_FULLSCREEN=false
+
+
+# Enable fullscreen
+ifeq ($(ENABLE_FULLSCREEN), true)
+LDFLAGS += \
+	-DENABLE_FULLSCREEN
+
+	ifeq ($(DEFAULT_FULLSCREEN), true)
+	LDFLAGS += -DDEFAULT_FULLSCREEN=1
+	else
+	LDFLAGS += -DDEFAULT_FULLSCREEN=0
+	endif
+endif
+
+# Define window size
+LDFLAGS += \
+	-DWINDOW_WIDTH=$(WINDOW_WIDTH) \
+	-DWINDOW_HEIGHT=$(WINDOW_HEIGHT)
+
+# Convert bool to SDL_Bool for WINDOW_RESIZABLE
+ifeq ($(WINDOW_RESIZABLE), true)
+LDFLAGS += -DWINDOW_RESIZABLE=SDL_TRUE
+else
+LDFLAGS += -DWINDOW_RESIZABLE=SDL_FALSE
+endif
+
+LDFLAGS += \
+	-DBLACK_HOLE_ON_CREATE \
+	-DENABLE_COLLISIONS
+
 CC=g++
 
 SRC=src
@@ -20,10 +56,6 @@ COMPILER_FLAGS=-w -O3
 LINKER_FLAGS=-lSDL2 -lm
 LDFLAGS += \
 	-DLOG_LEVEL=$(LOG_LEVEL) \
-
-LDFLAGS += \
-	-DBLACK_HOLE_ON_CREATE \
-	-DENABLE_COLLISIONS
 
 OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp
 

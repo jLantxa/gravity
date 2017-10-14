@@ -38,19 +38,34 @@ int Game::init(window_params* wparams) {
 	}
 	else
 	{
+        // Windowed mode by default
+        Uint32 windowFlag = SDL_WINDOW_OPENGL;
+        bFullScreen = false;
+
+        LOGD("DEFAULT_FULLSCREEN = %d\n", DEFAULT_FULLSCREEN);
+
+        // Set fullscreen if enabled and default
+        #if defined ENABLE_FULLSCREEN && DEFAULT_FULLSCREEN == 1
+        windowFlag = SDL_WINDOW_FULLSCREEN_DESKTOP;
+        bFullScreen = true;
+        #endif
+
         mWindow = SDL_CreateWindow (
                 wparams->title,             // title
                 SDL_WINDOWPOS_UNDEFINED,    // initial x
                 SDL_WINDOWPOS_UNDEFINED,    // initial y
                 wparams->width,             // width
                 wparams->height,            // height
-                SDL_WINDOW_FULLSCREEN_DESKTOP
+                windowFlag
         );
 
         if (mWindow == NULL) {
             LOGE("%s:\t Could not create window: %s\n", __func__, SDL_GetError());
             return -1;
         }
+
+        SDL_SetWindowResizable(mWindow, WINDOW_RESIZABLE);
+
 
 		//Set texture filtering to linear
 		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
@@ -77,6 +92,21 @@ void Game::quit() {
 
 void Game::pause(bool state) {
     mGameState.pause = state;
+}
+
+bool Game::toggleFullScreen() {
+    if (!bFullScreen) {
+        // Set fullscreen or window
+        #if defined ENABLE_FULLSCREEN
+        SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        bFullScreen = true;
+        #endif
+    } else {
+        SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_OPENGL);
+        bFullScreen = false;
+    }
+
+    return bFullScreen;
 }
 
 void Game::setRenderColor(Color color) {
@@ -122,7 +152,9 @@ int Game::run() {
         handle_events();
 
         /* ======== LOGIC ======== */
-        mUniverse.update();
+        if (!mGameState.pause) {
+            mUniverse.update();
+        }
 
         /* ======== DRAW ======== */
         // Clear screen
@@ -193,10 +225,19 @@ void Game::handle_events() {
             if (event.key.keysym.sym == SDLK_ESCAPE) {
                 LOGD("%s:\tPressed ESCAPE -> set mGameState.run = false\n", __func__);
                 mGameState.run = false;
+            } else if (event.key.keysym.sym == SDLK_p) {
+                mGameState.pause = !mGameState.pause;
+                LOGD("%s:\tPressed R -> toggle pause to %s\n", __func__,
+                    (mGameState.pause==true)?"true":"false");
             } else if (event.key.keysym.sym == SDLK_r) {
-                LOGD("%s:\tPressed R -> reset universe\n", __func__);
+                LOGD("%s:\tPressed P -> reset universe\n", __func__);
                 mUniverse.reset();
+            } else if (event.key.keysym.sym == SDLK_f) {
+                toggleFullScreen();
+                LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
+                    bFullScreen? "ON" : "OFF");
             }
+
             break;
 
         case SDL_MOUSEMOTION:
