@@ -198,13 +198,17 @@ int Game::run() {
                     particleColor = {0x00, 0x00, 0x00, 0xFF};
                     break;
 
+                case PARTICLE_WHITE_HOLE:
+                    particleColor = {0xFF, 0xFF, 0xAA, 0xFF};
+                    break;
+
                 case PARTICLE_PLANET:
                     if (bFieldView) particleColor = {0xFF, 0x33, 0x33, 0xFF};
                     else particleColor = {0x33, 0x33, 0xFF, 0xFF};
                     break;
 
                 default:
-                    particleColor = {0x00, 0x00, 0x00, 0xFF};
+                    particleColor = {0x128, 0x128, 0x128, 0xFF};
             }
 
             setRenderColor(particleColor);
@@ -260,7 +264,7 @@ void Game::renderField(int subsample_x, int subsample_y) {
             }
 
             float g = sqrt(ax*ax + ay*ay);
-            float gth = STAR_MASS / 2000;
+            float gth = BLACK_HOLE_MASS / 2000;
             if (g/gth > 1.0) g = gth;
 
             int aR = 0;   int aG = 0; int aB = 128;  // RGB for our 1st color
@@ -318,7 +322,12 @@ void Game::handle_events() {
                 bFieldView = !bFieldView;
                 LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
                         bFieldView? "ON" : "OFF");
-            } else if (event.key.keysym.sym == SDLK_UP) {
+            } else if (event.key.keysym.sym == SDLK_a) {
+                bAntiMatter = true;
+                LOGD("%s:\tPressed A -> enable anti-matter%s\n", __func__);
+            }
+
+            else if (event.key.keysym.sym == SDLK_UP) {
                 if (bFieldView) {
                     mFieldViewSubsambpleY++;
                     LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
@@ -346,6 +355,13 @@ void Game::handle_events() {
 
             break;
 
+        case SDL_KEYUP:
+            if (event.key.keysym.sym == SDLK_a) {
+                bAntiMatter = false;
+                LOGD("%s:\tReleased A -> disable anti-matter%s\n", __func__);
+            }
+            break;
+
         case SDL_MOUSEMOTION:
             if (mLauncher.clicked) {
                 int mx, my;
@@ -366,7 +382,8 @@ void Game::handle_events() {
                 mLauncher.end_y = my;
                 mLauncher.clicked = true;
             } else if (event.button.button == SDL_BUTTON_RIGHT) {
-                mUniverse.addBlackHole(mx, my);
+                if (!bAntiMatter) mUniverse.addBlackHole(mx, my);
+                else mUniverse.addWhiteHole(mx, my);
             }
             break;
         }

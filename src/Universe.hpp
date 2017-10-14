@@ -1,8 +1,8 @@
 #ifndef _UNIVERSE_HPP_
 #define _UNIVERSE_HPP_
 
-#define STAR_MASS   50000
-#define STAR_R      12
+#define BLACK_HOLE_MASS   50000
+#define BLACK_HOLE_R      12
 #define PLANET_MASS 50
 #define PLANET_R    3
 
@@ -13,6 +13,7 @@
 
 enum ParticleType {
     PARTICLE_BLACK_HOLE,
+    PARTICLE_WHITE_HOLE,
     PARTICLE_PLANET,
     PARTICLE_UNDEFINED,
 };
@@ -42,6 +43,7 @@ public:
 
     void addParticle(ParticleType type, bool fixed, float mass, float r, float x, float y, float vx, float vy);
     void addBlackHole(float x, float y);
+    void addWhiteHole(float x, float y);
     void addPlanet(float x, float y, float vx, float vy);
 
     void reset();

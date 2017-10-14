@@ -28,7 +28,7 @@ struct Color {
 
 class Game {
 private:
-    Color BACKGROUND_COLOR = {0xFF, 0xFF, 0xFF, 0xFF};
+    Color BACKGROUND_COLOR = {200, 200, 200, 255};
 
     GameState mGameState;
     SDL_Window* mWindow;
@@ -38,6 +38,7 @@ private:
 
     Universe mUniverse;
     Launcher mLauncher;
+    bool bAntiMatter = false;
     void drawLauncher();
 
     void handle_events();

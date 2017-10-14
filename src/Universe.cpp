@@ -40,7 +40,11 @@ void Universe::addParticle(ParticleType type, bool fixed, float mass, float r, f
 }
 
 void Universe::addBlackHole(float x, float y) {
-    addParticle(PARTICLE_BLACK_HOLE, true, STAR_MASS, STAR_R, x, y, 0, 0);
+    addParticle(PARTICLE_BLACK_HOLE, true, BLACK_HOLE_MASS, BLACK_HOLE_R, x, y, 0, 0);
+}
+
+void Universe::addWhiteHole(float x, float y) {
+    addParticle(PARTICLE_WHITE_HOLE, true, -BLACK_HOLE_MASS, BLACK_HOLE_R, x, y, 0, 0);
 }
 
 void Universe::addPlanet(float x, float y, float vx, float vy) {
@@ -76,7 +80,7 @@ void Universe::update() {
                 #ifdef ENABLE_COLLISIONS    // Particles collide with black holes
                 if (d < pi->r + pj->r) {
                     LOGI("Particles %d and %d collided\n", i, j);
-                    // Brint the two particles together if not fixed
+                    // Bring the two particles together if not fixed
                     if (pj->fixed) {
                         collision = true;
                     }
