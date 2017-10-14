@@ -17,8 +17,13 @@ std::vector<Particle>& Universe::particles() {
     return mParticles;
 }
 
-void Universe::addParticle(bool fixed, float mass, float r, float x, float y, float vx, float vy) {
+void Universe::reset() {
+    mParticles.clear();
+}
+
+void Universe::addParticle(ParticleType type, bool fixed, float mass, float r, float x, float y, float vx, float vy) {
     Particle particle;
+    particle.type = type;
     particle.fixed = fixed;
     particle.mass = mass;
     particle.r = r;
@@ -34,16 +39,12 @@ void Universe::addParticle(bool fixed, float mass, float r, float x, float y, fl
         particle.mass, particle.x, particle.y, particle.vx, particle.vy);
 }
 
-void Universe::addStar(float x, float y) {
-    addParticle(true, STAR_MASS, STAR_R, x, y, 0, 0);
+void Universe::addBlackHole(float x, float y) {
+    addParticle(PARTICLE_BLACK_HOLE, true, STAR_MASS, STAR_R, x, y, 0, 0);
 }
 
 void Universe::addPlanet(float x, float y, float vx, float vy) {
-    addParticle(false, PLANET_MASS, PLANET_R, x, y, vx, vy);
-}
-
-void Universe::clear() {
-    mParticles.clear();
+    addParticle(PARTICLE_PLANET, false, PLANET_MASS, PLANET_R, x, y, vx, vy);
 }
 
 void Universe::update() {
@@ -69,25 +70,16 @@ void Universe::update() {
 
                 d = sqrt((pi->x - pj->x)*(pi->x - pj->x) + (pi->y - pj->y)*(pi->y - pj->y));
 
-                // Particles collide
+                #ifdef ENABLE_COLLISIONS    // Particles collide with black holes
                 if (d < pi->r + pj->r) {
                     LOGI("Particles %d and %d collided\n", i, j);
                     // Brint the two particles together if not fixed
                     if (!pi->fixed) {
-                        if (!pj->fixed) {
-                            pi->mass += pj->mass;
-                            pi->r *= sqrt(2);
-                            pi->vx += pj->vx;
-                            pi->vy += pj->vy;
-                            pi->x = (pi->x + pj->x) / 2;
-                            pi->y = (pi->y + pj->y) / 2;
-                            mParticles.erase(pj);
-                        } else {
-                            collision = true;
-                        }
+                        collision = true;
                     }
                     continue;
                 }
+                #endif // ENABLE_COLLISIONS
 
                 d3 = pow(d, 2);
                 aix = pj->mass * (pj->x - pi->x) / d3;

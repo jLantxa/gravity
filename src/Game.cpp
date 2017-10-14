@@ -12,6 +12,7 @@ Game::Game() :
     mUniverse()
 {
     LOGVV("%s:\tGame constructor\n", __func__);
+    mLauncher.clicked = false;
 }
 
 Game::~Game() {
@@ -78,16 +79,37 @@ void Game::pause(bool state) {
     mGameState.pause = state;
 }
 
+void Game::setRenderColor(Color color) {
+    SDL_SetRenderDrawColor(mRenderer, color.r, color.g, color.b, color.a);
+}
+
 void Game::drawLauncher() {
-    
+    if (!mLauncher.clicked) return;
+
+    // Blue
+    Color launcherColor = {
+        0xFF - BACKGROUND_COLOR.r,
+        0xFF - BACKGROUND_COLOR.g,
+        0xFF - BACKGROUND_COLOR.b,
+        0xFF,
+    };
+
+    setRenderColor(launcherColor);
+    SDL_RenderDrawLine(mRenderer,
+            mLauncher.start_x,
+            mLauncher.start_y,
+            2*mLauncher.start_x - mLauncher.end_x,  // Segment length
+            2*mLauncher.start_y - mLauncher.end_y); // Segment length
 }
 
 int Game::run() {
     long frame = 0;
     int window_width, window_height;
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
-    mUniverse.addStar(window_width/2, window_height/2);
-    mUniverse.addPlanet(window_width/2 + 6*STAR_R*2, window_height/2, 0.0, -5.0);
+
+    #ifdef BLACK_HOLE_ON_CREATE
+    mUniverse.addBlackHole(window_width/2, window_height/2);
+    #endif
 
     // Game loop
     Timer fps;
@@ -104,11 +126,11 @@ int Game::run() {
 
         /* ======== DRAW ======== */
         // Clear screen
-        SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0xFF);
+        setRenderColor(BACKGROUND_COLOR);
         SDL_RenderClear(mRenderer);
 
         // Draw particles
-        SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        Color particleColor;
         for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
             SDL_Rect fillRect = {
                 p->x - p->r,
@@ -117,13 +139,28 @@ int Game::run() {
                 2*p->r
             };
 
+            switch (p->type) {
+                case PARTICLE_BLACK_HOLE:
+                    particleColor = {0x00, 0x00, 0x00, 0xFF};
+                    break;
+
+                case PARTICLE_PLANET:
+                    particleColor = {0x33, 0x33, 0xFF, 0xFF};
+                    break;
+
+                default:
+                    particleColor = {0x00, 0x00, 0x00, 0xFF};
+            }
+
             //SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0xFF);
+            setRenderColor(particleColor);
             SDL_RenderFillRect(mRenderer, &fillRect);
         }
 
         // Draw launcher
         drawLauncher();
 
+        // Commit graphics
         SDL_RenderPresent(mRenderer);
 
         //Sleep until next frame remaining frame time
@@ -156,13 +193,33 @@ void Game::handle_events() {
             if (event.key.keysym.sym == SDLK_ESCAPE) {
                 LOGD("%s:\tPressed ESCAPE -> set mGameState.run = false\n", __func__);
                 mGameState.run = false;
+            } else if (event.key.keysym.sym == SDLK_r) {
+                LOGD("%s:\tPressed R -> reset universe\n", __func__);
+                mUniverse.reset();
+            }
+            break;
+
+        case SDL_MOUSEMOTION:
+            if (mLauncher.clicked) {
+                int mx, my;
+                SDL_GetMouseState(&mx, &my);
+                mLauncher.end_x = 2*mLauncher.start_x - mx; // Segment length
+                mLauncher.end_y = 2*mLauncher.start_y - my; // Segment length
             }
             break;
 
         case SDL_MOUSEBUTTONDOWN: {
+            int mx, my;
+            SDL_GetMouseState(&mx, &my);
             if (event.button.button == SDL_BUTTON_LEFT) {
+                mLauncher.start_x = mx;
+                mLauncher.start_y = my;
+
+                mLauncher.end_x = mx;
+                mLauncher.end_y = my;
                 mLauncher.clicked = true;
-                SDL_GetMouseState(&mLauncher.click_x, &mLauncher.click_y);
+            } else if (event.button.button == SDL_BUTTON_RIGHT) {
+                mUniverse.addBlackHole(mx, my);
             }
             break;
         }
@@ -171,14 +228,22 @@ void Game::handle_events() {
             if (event.button.button == SDL_BUTTON_LEFT) {
                 if (mLauncher.clicked == false) break;
 
-                mLauncher.clicked = false;
+                int dx = mLauncher.end_x - mLauncher.start_x;
+                int dy = mLauncher.end_y - mLauncher.start_y;
+
+                int ex = 1.0 - exp(-abs(dx));
+                int ey = 1.0 - exp(-abs(dy));
 
                 mUniverse.addPlanet(
-                    mLauncher.click_x,
-                    mLauncher.click_y,
-                    0.0,//mLauncher.x - mLauncher.click_x,
-                    0.0);//mLauncher.click_y - mLauncher.y);
+                    mLauncher.start_x,
+                    mLauncher.start_y,
+                    // Pixels per second
+                    ex*dx / FRAMES_PER_SECOND,
+                    ey*dy / FRAMES_PER_SECOND);
+
+                mLauncher.clicked = false;
             }
+
             break;
         }
 

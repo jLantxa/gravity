@@ -11,7 +11,14 @@
 
 #include <vector>
 
+enum ParticleType {
+    PARTICLE_BLACK_HOLE,
+    PARTICLE_PLANET,
+    PARTICLE_UNDEFINED,
+};
+
 struct Particle {
+    ParticleType type;
     bool fixed;
     float mass;
     float r;
@@ -33,11 +40,11 @@ public:
 
     void update();
 
-    void addParticle(bool fixed, float mass, float r, float x, float y, float vx, float vy);
-    void addStar(float x, float y);
+    void addParticle(ParticleType type, bool fixed, float mass, float r, float x, float y, float vx, float vy);
+    void addBlackHole(float x, float y);
     void addPlanet(float x, float y, float vx, float vy);
 
-    void clear();
+    void reset();
 };
 
 #endif

@@ -18,7 +18,12 @@ BUILD=build
 
 COMPILER_FLAGS=-w -O3
 LINKER_FLAGS=-lSDL2 -lm
-LDFLAGS += -DLOG_LEVEL=$(LOG_LEVEL)
+LDFLAGS += \
+	-DLOG_LEVEL=$(LOG_LEVEL) \
+
+LDFLAGS += \
+	-DBLACK_HOLE_ON_CREATE \
+	-DENABLE_COLLISIONS
 
 OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp
 
