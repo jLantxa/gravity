@@ -13,6 +13,8 @@ Game::Game() :
 {
     LOGVV("%s:\tGame constructor\n", __func__);
     mLauncher.clicked = false;
+    mFieldViewSubsambpleX = FIELD_VIEW_SUBSAMPLE_X;
+    mFieldViewSubsambpleY = FIELD_VIEW_SUBSAMPLE_Y;
 }
 
 Game::~Game() {
@@ -161,6 +163,11 @@ int Game::run() {
         setRenderColor(BACKGROUND_COLOR);
         SDL_RenderClear(mRenderer);
 
+        // Rendef the field if enabled
+        if (bFieldView) {
+            renderField(mFieldViewSubsambpleX, mFieldViewSubsambpleY);
+        }
+
         // Draw particles
         Color particleColor;
         for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
@@ -209,6 +216,48 @@ int Game::run() {
     return 0;
 }
 
+void Game::renderField(int subsample_x, int subsample_y) {
+    LOGVV("%s:\tRender field\n", __func__);
+
+    int window_width, window_height;
+    SDL_GetWindowSize(mWindow, &window_width, &window_height);
+
+    float max_g = 0.0;
+    for (int x = 0; x < window_width; x+=subsample_x) {
+        for (int y = 0; y < window_height; y+=subsample_y) {
+
+            float ax = 0.0;
+            float ay = 0.0;
+            float d, dx, dy, d3;
+            for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
+                dx = (x - p->x);
+                dy = (y - p->y);
+                d = sqrt(dx*dx + dy*dy);
+                d3 = d*d*d;
+                ax += p->mass * dx / d3;
+                ay += p->mass * dy / d3;
+            }
+
+            float g = ax*ax + ay*ay;
+            if (g > max_g) max_g = g;
+
+            SDL_SetRenderDrawColor(mRenderer,
+                    (g <=0xFF)? g : 0xFF,
+                    (g <=0xFF)? 0xFF - g : 0x00,
+                    0x00,
+                    0xFF);
+
+            if (subsample_x > 1 || subsample_y > 1) {
+                SDL_Rect fillRect = {x, y, subsample_x, subsample_y};
+                SDL_RenderFillRect(mRenderer, &fillRect);
+            } else {
+                SDL_RenderDrawPoint(mRenderer, x, y);
+            }
+        }
+    }
+
+    LOGD("Max force = %f\n", max_g);
+}
 void Game::handle_events() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
@@ -236,6 +285,33 @@ void Game::handle_events() {
                 toggleFullScreen();
                 LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
                     bFullScreen? "ON" : "OFF");
+            } else if (event.key.keysym.sym == SDLK_g) {
+                LOGD("%s:\tPressed G -> toggle field view %s\n", __func__);
+                bFieldView = !bFieldView;
+            } else if (event.key.keysym.sym == SDLK_UP) {
+                if (bFieldView) {
+                    mFieldViewSubsambpleY++;
+                    LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
+                }
+            } else if (event.key.keysym.sym == SDLK_DOWN) {
+                if (bFieldView) {
+                    if (mFieldViewSubsambpleY > 1) {
+                        mFieldViewSubsambpleY--;
+                        LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
+                    }
+                }
+            } else if (event.key.keysym.sym == SDLK_LEFT) {
+                if (bFieldView) {
+                    if (mFieldViewSubsambpleX > 1) {
+                        mFieldViewSubsambpleX--;
+                        LOGD("%s:\tPressed UP -> set field view subsample X to %d\n", __func__, mFieldViewSubsambpleX);
+                    }
+                }
+            } else if (event.key.keysym.sym == SDLK_RIGHT) {
+                if (bFieldView) {
+                    mFieldViewSubsambpleX++;
+                    LOGD("%s:\tPressed UP -> set field view subsample X to %d\n", __func__, mFieldViewSubsambpleX);
+                }
             }
 
             break;

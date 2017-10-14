@@ -34,7 +34,6 @@ private:
     SDL_Window* mWindow;
     SDL_Renderer* mRenderer;
     bool bFullScreen = false;
-
     bool toggleFullScreen();
 
     Universe mUniverse;
@@ -44,6 +43,11 @@ private:
     void handle_events();
 
     void setRenderColor(Color color);
+
+    bool bFieldView = false;
+    int mFieldViewSubsambpleX;
+    int mFieldViewSubsambpleY;
+    void renderField(int subsample_x, int subsample_y);
 
 public:
     Game();

@@ -50,14 +50,14 @@ void Universe::addPlanet(float x, float y, float vx, float vy) {
 void Universe::update() {
     LOGVV("Updating %d particles\n", mParticles.size());
 
-    float k = 0.1*1.0/FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
+    float k = 2.0/FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
 
     int i = 0;
     int j = 0;
 
     // Calculate net accellerations
     float aix, aiy; // Instantaneous accelerations
-    float d, d3;    // Distance and cubed distance
+    float d, dx, dy, d3;    // Distance and cubed distance
     bool collision;
     for (auto pi = mParticles.begin(); pi < mParticles.end(); pi++, i++) {
         collision = false;
@@ -68,7 +68,10 @@ void Universe::update() {
 
                 LOGVV("%s:\tCalculate a%d\n", __func__, i);
 
-                d = sqrt((pi->x - pj->x)*(pi->x - pj->x) + (pi->y - pj->y)*(pi->y - pj->y));
+                dx = (pj->x - pi->x);
+                dy = (pj->y - pi->y);
+                d = sqrt(dx*dx + dy*dy);
+                d3 = d*d*d;
 
                 #ifdef ENABLE_COLLISIONS    // Particles collide with black holes
                 if (d < pi->r + pj->r) {
@@ -81,9 +84,8 @@ void Universe::update() {
                 }
                 #endif // ENABLE_COLLISIONS
 
-                d3 = pow(d, 2);
-                aix = pj->mass * (pj->x - pi->x) / d3;
-                aiy = pj->mass * (pj->y - pi->y) / d3;
+                aix = pj->mass * dx / d3;
+                aiy = pj->mass * dy / d3;
 
                 pi->vx += k * aix;
                 pi->vy += k * aiy;
