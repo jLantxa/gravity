@@ -1,4 +1,5 @@
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
+#include "SDL2/SDL2_gfxPrimitives.h"
 
 #include "log.hpp"
 #include "gravity.hpp"
@@ -192,9 +193,13 @@ int Game::run() {
                     particleColor = {0x00, 0x00, 0x00, 0xFF};
             }
 
-            //SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0xFF);
             setRenderColor(particleColor);
-            SDL_RenderFillRect(mRenderer, &fillRect);
+            filledCircleRGBA(mRenderer,
+                    p->x, p->y, p->r,
+                    particleColor.r,
+                    particleColor.g,
+                    particleColor.b,
+                    particleColor.a);
         }
 
         // Draw launcher

@@ -1,7 +1,7 @@
 #ifndef _GAME_HPP_
 #define _GAME_HPP_
 
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 
 #include "gravity.hpp"
 #include "Universe.hpp"

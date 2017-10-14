@@ -9,7 +9,7 @@ TARGET=gravity
 #	LOGE  |	x | x | x | x |   # Error
 #	LOGI  |	x | x | x | x |   #	Information
 ###############################
-LOG_LEVEL=3
+LOG_LEVEL=2
 
 # Window parameters
 WINDOW_WIDTH=1024
@@ -60,7 +60,7 @@ SRC=src
 BUILD=build
 
 COMPILER_FLAGS=-w -O3
-LINKER_FLAGS=-lSDL2 -lm
+LINKER_FLAGS=-lm -lSDL2 -lSDL -lSDL2_gfx
 LDFLAGS += \
 	-DLOG_LEVEL=$(LOG_LEVEL) \
 
