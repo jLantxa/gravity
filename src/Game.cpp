@@ -300,8 +300,13 @@ void Game::handle_events() {
         case SDL_KEYDOWN:
             LOGD("%s:\tSDL_KEYDOWN event\n", __func__);
             if (event.key.keysym.sym == SDLK_ESCAPE) {
-                LOGD("%s:\tPressed ESCAPE -> set mGameState.run = false\n", __func__);
-                mGameState.run = false;
+                if (bFullScreen) {
+                    LOGD("%s:\tPressed ESCAPE -> exit fullscreen\n", __func__);
+                    toggleFullScreen();
+                } else {
+                    LOGD("%s:\tPressed ESCAPE -> set mGameState.run = false\n", __func__);
+                    mGameState.run = false;
+                }
             } else if (event.key.keysym.sym == SDLK_p) {
                 mGameState.pause = !mGameState.pause;
                 LOGD("%s:\tPressed R -> toggle pause to %s\n", __func__,
