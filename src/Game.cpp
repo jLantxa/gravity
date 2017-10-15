@@ -16,6 +16,11 @@ Game::Game() :
     mLauncher.clicked = false;
     mFieldViewSubsambpleX = FIELD_VIEW_SUBSAMPLE_X;
     mFieldViewSubsambpleY = FIELD_VIEW_SUBSAMPLE_Y;
+
+    mGameState.run =  false;
+    mGameState.pause = false;
+    mGameState.fieldView = false;
+    mGameState.antimatter = false;
 }
 
 Game::~Game() {
@@ -179,7 +184,7 @@ int Game::run() {
         SDL_RenderClear(mRenderer);
 
         // Rendef the field if enabled
-        if (bFieldView) {
+        if (mGameState.fieldView) {
             renderField(mFieldViewSubsambpleX, mFieldViewSubsambpleY);
         }
 
@@ -203,7 +208,7 @@ int Game::run() {
                     break;
 
                 case PARTICLE_PLANET:
-                    if (bFieldView) particleColor = {0xFF, 0x33, 0x33, 0xFF};
+                    if (mGameState.fieldView) particleColor = {0xFF, 0x33, 0x33, 0xFF};
                     else particleColor = {0x33, 0x33, 0xFF, 0xFF};
                     break;
 
@@ -324,35 +329,35 @@ void Game::handle_events() {
                 LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
                     bFullScreen? "ON" : "OFF");
             } else if (event.key.keysym.sym == SDLK_g) {
-                bFieldView = !bFieldView;
+                mGameState.fieldView = !mGameState.fieldView;
                 LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
-                        bFieldView? "ON" : "OFF");
+                        mGameState.fieldView? "ON" : "OFF");
             } else if (event.key.keysym.sym == SDLK_a) {
-                bAntiMatter = true;
+                mGameState.antimatter = true;
                 LOGD("%s:\tPressed A -> enable anti-matter%s\n", __func__);
             }
 
             else if (event.key.keysym.sym == SDLK_UP) {
-                if (bFieldView) {
+                if (mGameState.fieldView) {
                     mFieldViewSubsambpleY++;
                     LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
                 }
             } else if (event.key.keysym.sym == SDLK_DOWN) {
-                if (bFieldView) {
+                if (mGameState.fieldView) {
                     if (mFieldViewSubsambpleY > 1) {
                         mFieldViewSubsambpleY--;
                         LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
                     }
                 }
             } else if (event.key.keysym.sym == SDLK_LEFT) {
-                if (bFieldView) {
+                if (mGameState.fieldView) {
                     if (mFieldViewSubsambpleX > 1) {
                         mFieldViewSubsambpleX--;
                         LOGD("%s:\tPressed UP -> set field view subsample X to %d\n", __func__, mFieldViewSubsambpleX);
                     }
                 }
             } else if (event.key.keysym.sym == SDLK_RIGHT) {
-                if (bFieldView) {
+                if (mGameState.fieldView) {
                     mFieldViewSubsambpleX++;
                     LOGD("%s:\tPressed UP -> set field view subsample X to %d\n", __func__, mFieldViewSubsambpleX);
                 }
@@ -362,7 +367,7 @@ void Game::handle_events() {
 
         case SDL_KEYUP:
             if (event.key.keysym.sym == SDLK_a) {
-                bAntiMatter = false;
+                mGameState.antimatter = false;
                 LOGD("%s:\tReleased A -> disable anti-matter%s\n", __func__);
             }
             break;
@@ -387,7 +392,7 @@ void Game::handle_events() {
                 mLauncher.end_y = my;
                 mLauncher.clicked = true;
             } else if (event.button.button == SDL_BUTTON_RIGHT) {
-                if (!bAntiMatter) mUniverse.addBlackHole(mx, my);
+                if (!mGameState.antimatter) mUniverse.addBlackHole(mx, my);
                 else mUniverse.addWhiteHole(mx, my);
             }
             break;

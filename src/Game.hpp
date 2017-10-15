@@ -9,6 +9,8 @@
 struct GameState {
     bool run;
     bool pause;
+    bool fieldView;
+    bool antimatter;
 };
 
 struct Launcher {
@@ -38,14 +40,12 @@ private:
 
     Universe mUniverse;
     Launcher mLauncher;
-    bool bAntiMatter = false;
     void drawLauncher();
 
     void handle_events();
 
     void setRenderColor(Color color);
 
-    bool bFieldView = false;
     int mFieldViewSubsambpleX;
     int mFieldViewSubsambpleY;
     void renderField(int subsample_x, int subsample_y);
