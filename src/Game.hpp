@@ -5,6 +5,7 @@
 
 #include "gravity.hpp"
 #include "Universe.hpp"
+#include "Timer.hpp"
 
 struct GameState {
     bool run;
@@ -33,10 +34,13 @@ private:
     Color BACKGROUND_COLOR = {200, 200, 200, 255};
 
     GameState mGameState;
+    Timer mTimer;
+
     SDL_Window* mWindow;
     SDL_Renderer* mRenderer;
     bool bFullScreen = false;
     bool toggleFullScreen();
+    bool togglePause();
 
     Universe mUniverse;
     Launcher mLauncher;

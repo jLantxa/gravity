@@ -10,7 +10,8 @@
 Game::Game() :
     mWindow(NULL),
     mRenderer(NULL),
-    mUniverse()
+    mUniverse(),
+    mTimer()
 {
     LOGVV("%s:\tGame constructor\n", __func__);
     mLauncher.clicked = false;
@@ -100,6 +101,16 @@ void Game::quit() {
 
 void Game::pause(bool state) {
     mGameState.pause = state;
+
+    if (state == true) {
+        mTimer.pause();
+    } else {
+        mTimer.unpause();
+    }
+}
+
+bool Game::togglePause() {
+    pause(!mGameState.pause);
 }
 
 void Game::eraseOOBParticles() {
@@ -164,11 +175,11 @@ int Game::run() {
     #endif
 
     // Game loop
-    Timer fps;
-    fps.init();
+    mTimer.start();
     while (mGameState.run == true) {
-        fps.start();
-        ++frame;
+        // Reset timer and increment frame counter
+        mTimer.start();
+        frame++;
 
         /* ======== EVENTS ======== */
         handle_events();
@@ -183,7 +194,7 @@ int Game::run() {
         setRenderColor(BACKGROUND_COLOR);
         SDL_RenderClear(mRenderer);
 
-        // Rendef the field if enabled
+        // Render the field if enabled
         if (mGameState.fieldView) {
             renderField(mFieldViewSubsambpleX, mFieldViewSubsambpleY);
         }
@@ -191,13 +202,8 @@ int Game::run() {
         // Draw particles
         Color particleColor;
         for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
-            SDL_Rect fillRect = {
-                p->x - p->r,
-                p->y - p->r,
-                2*p->r,
-                2*p->r
-            };
 
+            // Select particle colour
             switch (p->type) {
                 case PARTICLE_BLACK_HOLE:
                     particleColor = {0x00, 0x00, 0x00, 0xFF};
@@ -216,6 +222,7 @@ int Game::run() {
                     particleColor = {0x128, 0x128, 0x128, 0xFF};
             }
 
+            // Render particle
             setRenderColor(particleColor);
             filledCircleRGBA(mRenderer,
                     p->x, p->y, p->r,
@@ -232,9 +239,9 @@ int Game::run() {
         SDL_RenderPresent(mRenderer);
 
         //Sleep until next frame remaining frame time
-        int slack = (1000 / FRAMES_PER_SECOND) - fps.get_ticks();
+        int slack = (1000 / FRAMES_PER_SECOND) - mTimer.get_ticks();
         if (slack > 0) {
-            int slack = (1000 / FRAMES_PER_SECOND) - fps.get_ticks();
+            int slack = (1000 / FRAMES_PER_SECOND) - mTimer.get_ticks();
             LOGVV("Frame %d, slack %d\n", frame, slack);
             SDL_Delay(slack);
         } else {
@@ -313,7 +320,8 @@ void Game::handle_events() {
                     mGameState.run = false;
                 }
             } else if (event.key.keysym.sym == SDLK_p) {
-                mGameState.pause = !mGameState.pause;
+                togglePause();
+
                 LOGD("%s:\tPressed R -> toggle pause to %s\n", __func__,
                     (mGameState.pause==true)?"true":"false");
 
