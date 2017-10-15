@@ -205,20 +205,19 @@ int Game::run() {
             // Select particle colour
             switch (p->type) {
                 case PARTICLE_BLACK_HOLE:
-                    particleColor = {0x00, 0x00, 0x00, 0xFF};
+                    particleColor = {0xFF, 0xFF, 0x128, 0xFF};
                     break;
 
                 case PARTICLE_WHITE_HOLE:
-                    particleColor = {0xFF, 0xFF, 0xAA, 0xFF};
+                    particleColor = {0x128, 0xFF, 0xFF, 0xFF};
                     break;
 
                 case PARTICLE_PLANET:
-                    if (mGameState.fieldView) particleColor = {0xFF, 0x33, 0x33, 0xFF};
-                    else particleColor = {0x33, 0x33, 0xFF, 0xFF};
+                    particleColor = {0x33, 0x33, 0xFF, 0xFF};
                     break;
 
                 default:
-                    particleColor = {0x128, 0x128, 0x128, 0xFF};
+                    particleColor = {0xFF, 0xFF, 0xFF, 0xFF};
             }
 
             // Render particle
@@ -278,8 +277,8 @@ void Game::renderField(int subsample_x, int subsample_y) {
             float gth = BLACK_HOLE_MASS / 2000;
             if (g/gth > 1.0) g = gth;
 
-            int aR = 0;   int aG = 0; int aB = 128;  // RGB for our 1st color
-            int bR = 128; int bG = 128; int bB=0;    // RGB for our 2nd color
+            int aR = 0;   int aG = 0; int aB = 0;  // RGB for our 1st color
+            int bR = 128; int bG = 0; int bB= 0;    // RGB for our 2nd color
 
             Uint8 red   = (bR - aR) * (g/gth) + aR;
             Uint8 green = (bG - aG) * (g/gth) + aG;

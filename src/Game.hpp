@@ -24,7 +24,7 @@ struct Color {
 
 class Game {
 private:
-    Color BACKGROUND_COLOR = {200, 200, 200, 255};
+    Color BACKGROUND_COLOR = {0x00, 0x00, 0x00, 0xFF};
 
     GameState mGameState;
     Timer mTimer;
