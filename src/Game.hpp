@@ -6,20 +6,13 @@
 #include "gravity.hpp"
 #include "Universe.hpp"
 #include "Timer.hpp"
+#include "Launcher.hpp"
 
 struct GameState {
     bool run;
     bool pause;
     bool fieldView;
     bool antimatter;
-};
-
-struct Launcher {
-    bool clicked;
-    int start_x;
-    int start_y;
-    int end_x;
-    int end_y;
 };
 
 struct Color {

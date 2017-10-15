@@ -64,7 +64,7 @@ LINKER_FLAGS=-lm -lSDL2 -lSDL -lSDL2_gfx
 LDFLAGS += \
 	-DLOG_LEVEL=$(LOG_LEVEL) \
 
-OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp
+OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp $(SRC)/Launcher.cpp
 
 all:
 	$(info Building target...)

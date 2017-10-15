@@ -6,6 +6,7 @@
 #include "Timer.hpp"
 #include "Game.hpp"
 #include "Universe.hpp"
+#include "Launcher.hpp"
 
 Game::Game() :
     mWindow(NULL),
@@ -14,7 +15,6 @@ Game::Game() :
     mTimer()
 {
     LOGVV("%s:\tGame constructor\n", __func__);
-    mLauncher.clicked = false;
     mFieldViewSubsambpleX = FIELD_VIEW_SUBSAMPLE_X;
     mFieldViewSubsambpleY = FIELD_VIEW_SUBSAMPLE_Y;
 
@@ -147,7 +147,7 @@ void Game::setRenderColor(Color color) {
 }
 
 void Game::drawLauncher() {
-    if (!mLauncher.clicked) return;
+    if (!mLauncher.isClicked()) return;
 
     // Blue
     Color launcherColor = {
@@ -159,10 +159,10 @@ void Game::drawLauncher() {
 
     setRenderColor(launcherColor);
     SDL_RenderDrawLine(mRenderer,
-            mLauncher.start_x,
-            mLauncher.start_y,
-            2*mLauncher.start_x - mLauncher.end_x,  // Segment length
-            2*mLauncher.start_y - mLauncher.end_y); // Segment length
+            mLauncher.getStartX(),
+            mLauncher.getStartY(),
+            2*mLauncher.getStartX() - mLauncher.getEndX(),  // Segment length
+            2*mLauncher.getStartY() - mLauncher.getEndY()); // Segment length
 }
 
 int Game::run() {
@@ -202,7 +202,6 @@ int Game::run() {
         // Draw particles
         Color particleColor;
         for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
-
             // Select particle colour
             switch (p->type) {
                 case PARTICLE_BLACK_HOLE:
@@ -302,8 +301,8 @@ void Game::handle_events() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         LOGVV("%s:\tEvent type = %d\n", __func__, event.type);
-        switch(event.type)
-        {
+
+        switch(event.type) {
         case SDL_QUIT:
             LOGV("%s:\tSDL_QUIT event\n", __func__);
             mGameState.run = false;
@@ -319,6 +318,7 @@ void Game::handle_events() {
                     LOGD("%s:\tPressed ESCAPE -> set mGameState.run = false\n", __func__);
                     mGameState.run = false;
                 }
+
             } else if (event.key.keysym.sym == SDLK_p) {
                 togglePause();
 
@@ -329,27 +329,31 @@ void Game::handle_events() {
                 if (mGameState.pause) title = WINDOW_TITLE_PAUSE;
                 else title = WINDOW_TITLE;
                 SDL_SetWindowTitle(mWindow, title);
+
             } else if (event.key.keysym.sym == SDLK_r) {
                 LOGD("%s:\tPressed P -> reset universe\n", __func__);
                 mUniverse.reset();
+
             } else if (event.key.keysym.sym == SDLK_f) {
                 toggleFullScreen();
                 LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
                     bFullScreen? "ON" : "OFF");
+
             } else if (event.key.keysym.sym == SDLK_g) {
                 mGameState.fieldView = !mGameState.fieldView;
                 LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
                         mGameState.fieldView? "ON" : "OFF");
+
             } else if (event.key.keysym.sym == SDLK_LSHIFT) {
                 mGameState.antimatter = true;
                 LOGD("%s:\tPressed LSHIFT -> enable anti-matter%s\n", __func__);
-            }
 
-            else if (event.key.keysym.sym == SDLK_UP) {
+            } else if (event.key.keysym.sym == SDLK_UP) {
                 if (mGameState.fieldView) {
                     mFieldViewSubsambpleY++;
                     LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
                 }
+
             } else if (event.key.keysym.sym == SDLK_DOWN) {
                 if (mGameState.fieldView) {
                     if (mFieldViewSubsambpleY > 1) {
@@ -357,6 +361,7 @@ void Game::handle_events() {
                         LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
                     }
                 }
+
             } else if (event.key.keysym.sym == SDLK_LEFT) {
                 if (mGameState.fieldView) {
                     if (mFieldViewSubsambpleX > 1) {
@@ -364,6 +369,7 @@ void Game::handle_events() {
                         LOGD("%s:\tPressed UP -> set field view subsample X to %d\n", __func__, mFieldViewSubsambpleX);
                     }
                 }
+
             } else if (event.key.keysym.sym == SDLK_RIGHT) {
                 if (mGameState.fieldView) {
                     mFieldViewSubsambpleX++;
@@ -381,11 +387,10 @@ void Game::handle_events() {
             break;
 
         case SDL_MOUSEMOTION:
-            if (mLauncher.clicked) {
+            if (mLauncher.isClicked()) {
                 int mx, my;
                 SDL_GetMouseState(&mx, &my);
-                mLauncher.end_x = 2*mLauncher.start_x - mx; // Segment length
-                mLauncher.end_y = 2*mLauncher.start_y - my; // Segment length
+                mLauncher.move(mx, my);
             }
             break;
 
@@ -393,12 +398,7 @@ void Game::handle_events() {
             int mx, my;
             SDL_GetMouseState(&mx, &my);
             if (event.button.button == SDL_BUTTON_LEFT) {
-                mLauncher.start_x = mx;
-                mLauncher.start_y = my;
-
-                mLauncher.end_x = mx;
-                mLauncher.end_y = my;
-                mLauncher.clicked = true;
+                mLauncher.click(mx, my);
             } else if (event.button.button == SDL_BUTTON_RIGHT) {
                 if (!mGameState.antimatter) mUniverse.addBlackHole(mx, my);
                 else mUniverse.addWhiteHole(mx, my);
@@ -408,22 +408,20 @@ void Game::handle_events() {
 
         case SDL_MOUSEBUTTONUP: {
             if (event.button.button == SDL_BUTTON_LEFT) {
-                if (mLauncher.clicked == false) break;
+                if (!mLauncher.isClicked()) break;
+                mLauncher.release();
 
-                int dx = mLauncher.end_x - mLauncher.start_x;
-                int dy = mLauncher.end_y - mLauncher.start_y;
+                int dx = mLauncher.getEndX() - mLauncher.getStartX();
+                int dy = mLauncher.getEndY() - mLauncher.getStartY();
 
                 int ex = 1.0 - exp(-abs(dx));
                 int ey = 1.0 - exp(-abs(dy));
 
                 mUniverse.addPlanet(
-                    mLauncher.start_x,
-                    mLauncher.start_y,
-                    // Pixels per second
-                    ex*dx / FRAMES_PER_SECOND,
+                    mLauncher.getStartX(),
+                    mLauncher.getStartY(),
+                    ex*dx / FRAMES_PER_SECOND,  // Pixels per second
                     ey*dy / FRAMES_PER_SECOND);
-
-                mLauncher.clicked = false;
             }
 
             break;
