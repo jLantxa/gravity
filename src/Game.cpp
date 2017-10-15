@@ -332,9 +332,9 @@ void Game::handle_events() {
                 mGameState.fieldView = !mGameState.fieldView;
                 LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
                         mGameState.fieldView? "ON" : "OFF");
-            } else if (event.key.keysym.sym == SDLK_a) {
+            } else if (event.key.keysym.sym == SDLK_LSHIFT) {
                 mGameState.antimatter = true;
-                LOGD("%s:\tPressed A -> enable anti-matter%s\n", __func__);
+                LOGD("%s:\tPressed LSHIFT -> enable anti-matter%s\n", __func__);
             }
 
             else if (event.key.keysym.sym == SDLK_UP) {
@@ -366,7 +366,7 @@ void Game::handle_events() {
             break;
 
         case SDL_KEYUP:
-            if (event.key.keysym.sym == SDLK_a) {
+            if (event.key.keysym.sym == SDLK_LSHIFT) {
                 mGameState.antimatter = false;
                 LOGD("%s:\tReleased A -> disable anti-matter%s\n", __func__);
             }
