@@ -1,43 +1,40 @@
-TARGET=gravity
-
-###############################
-#	level | 4 | 3 | 2 | 1 | 0 #
-###############################
-#	LOGVV |	x |   |   |   |   # Very verbose
-#	LOGV  |	x | x |   |   |   # Verbose
-#	LOGD  |	x | x | x |   |   # Debug
-#	LOGE  |	x | x | x | x |   # Error
-#	LOGI  |	x | x | x | x |   #	Information
-###############################
-LOG_LEVEL=1
+################################
+#    level | 4 | 3 | 2 | 1 | 0 #
+################################
+#    LOGVV | x |   |   |   |   # Very verbose
+#    LOGV  | x | x |   |   |   # Verbose
+#    LOGD  | x | x | x |   |   # Debug
+#    LOGE  | x | x | x | x |   # Error
+#    LOGI  | x | x | x | x |   # Information
+################################
+LOG_LEVEL=0
 
 # Window parameters
-WINDOW_WIDTH=1024
-WINDOW_HEIGHT=768
-WINDOW_RESIZABLE=true
-ENABLE_FULLSCREEN=true
-DEFAULT_FULLSCREEN=false
+WINDOW_WIDTH=800
+WINDOW_HEIGHT=600
+WINDOW_RESIZABLE=1
+ENABLE_FULLSCREEN=1
+DEFAULT_FULLSCREEN=0
 
+# Simulator parameters
+BLACK_HOLE_ON_CREATE=0
+ENABLE_COLLISIONS=1
+
+# Field view subsample
 FIELD_VIEW_SUBSAMPLE_X = 4
 FIELD_VIEW_SUBSAMPLE_Y = 4
 
 
-# Enable fullscreen
-ifeq ($(ENABLE_FULLSCREEN), true)
-LDFLAGS += \
-	-DENABLE_FULLSCREEN
+#####################################################
+#####################################################
+TARGET=gravity
 
-	ifeq ($(DEFAULT_FULLSCREEN), true)
-	LDFLAGS += -DDEFAULT_FULLSCREEN=1
-	else
-	LDFLAGS += -DDEFAULT_FULLSCREEN=0
-	endif
-endif
-
-# Define window size
+# Window
 LDFLAGS += \
 	-DWINDOW_WIDTH=$(WINDOW_WIDTH) \
-	-DWINDOW_HEIGHT=$(WINDOW_HEIGHT)
+	-DWINDOW_HEIGHT=$(WINDOW_HEIGHT) \
+	-DENABLE_FULLSCREEN=$(ENABLE_FULLSCREEN) \
+	-DDEFAULT_FULLSCREEN=$(DEFAULT_FULLSCREEN)
 
 # Convert bool to SDL_Bool for WINDOW_RESIZABLE
 ifeq ($(WINDOW_RESIZABLE), true)
@@ -46,10 +43,12 @@ else
 LDFLAGS += -DWINDOW_RESIZABLE=SDL_FALSE
 endif
 
+# Params
 LDFLAGS += \
-	-DBLACK_HOLE_ON_CREATE \
-	-DENABLE_COLLISIONS
+	-DBLACK_HOLE_ON_CREATE=$(BLACK_HOLE_ON_CREATE) \
+	-DENABLE_COLLISIONS=$(ENABLE_COLLISIONS)
 
+# Field subsampling
 LDFLAGS += \
 	-DFIELD_VIEW_SUBSAMPLE_Y=$(FIELD_VIEW_SUBSAMPLE_Y) \
 	-DFIELD_VIEW_SUBSAMPLE_X=$(FIELD_VIEW_SUBSAMPLE_X)

@@ -130,7 +130,7 @@ void Game::eraseOOBParticles() {
 bool Game::toggleFullScreen() {
     if (!bFullScreen) {
         // Set fullscreen or window
-        #if defined ENABLE_FULLSCREEN
+        #if defined ENABLE_FULLSCREEN && ENABLE_FULLSCREEN == 1
         SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
         bFullScreen = true;
         #endif
@@ -170,7 +170,7 @@ int Game::run() {
     int window_width, window_height;
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
 
-    #ifdef BLACK_HOLE_ON_CREATE
+    #ifndef BLACK_HOLE_ON_CREATE || BLACK_HOLE_ON_CREATE == 0
     mUniverse.addBlackHole(window_width/2, window_height/2);
     #endif
 
