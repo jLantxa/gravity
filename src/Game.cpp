@@ -37,8 +37,6 @@ int Game::init(window_params* wparams) {
 	//Initialization flag
 	int ret = 0;
 
-    mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED);
-
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{

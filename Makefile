@@ -59,7 +59,7 @@ SRC=src
 BUILD=build
 
 COMPILER_FLAGS=-w -O3
-LINKER_FLAGS=-lm -lSDL2 -lSDL -lSDL2_gfx
+LINKER_FLAGS=-lm -lSDL2 -lSDL2_gfx
 LDFLAGS += \
 	-DLOG_LEVEL=$(LOG_LEVEL) \
 
@@ -67,6 +67,7 @@ OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp $(S
 
 all:
 	$(info Building target...)
+	@make init
 	$(CC) -I $(SRC) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(LDFLAGS) $(OBJS) -o $(BUILD)/$(TARGET)
 
 run:
@@ -77,8 +78,9 @@ build-run:
 	$(MAKE) run
 
 init:
-	mkdir $(BUILD)
+	$(info Init build directory...)
+	@mkdir -p $(BUILD)
 
 clean:
 	$(info Cleaning...)
-	rm $(BUILD)/*
+	@rm -rf $(BUILD)
