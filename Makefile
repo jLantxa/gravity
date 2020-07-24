@@ -4,10 +4,10 @@
 #    LOGVV | x |   |   |   |   # Very verbose
 #    LOGV  | x | x |   |   |   # Verbose
 #    LOGD  | x | x | x |   |   # Debug
-#    LOGE  | x | x | x | x |   # Error
-#    LOGI  | x | x | x | x |   # Information
+#    LOGI  | x | x | x | x |   # Error
+#    LOGE  | x | x | x | x |   # Information
 ################################
-LOG_LEVEL=0
+LOG_LEVEL=1
 
 # Window parameters
 WINDOW_WIDTH=800

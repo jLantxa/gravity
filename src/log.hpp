@@ -12,23 +12,23 @@
 #define LOGVV
 
 #if LOG_LEVEL >= 4
-#   define LOGVV printf("VV\t"); \
+#   define LOGVV printf("[VV] "); \
     printf
 #endif
 
 #if LOG_LEVEL >= 3
-#   define LOGV printf("V\t"); \
+#   define LOGV printf("[V] "); \
     printf
 #endif
 
 #if LOG_LEVEL >= 2
-#   define LOGD printf("D\t"); \
+#   define LOGD printf("[D] "); \
     printf
 #endif
 
 #if LOG_LEVEL >= 1
-#   define LOGE printf("E\t"); \
+#   define LOGE printf("[E] "); \
     printf
-#   define LOGI printf("I\t"); \
+#   define LOGI printf("[I] "); \
     printf
 #endif

@@ -21,7 +21,6 @@ Game::Game() :
     mGameState.run =  false;
     mGameState.pause = false;
     mGameState.fieldView = false;
-    mGameState.antimatter = false;
 }
 
 Game::~Game() {
@@ -169,7 +168,7 @@ int Game::run() {
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
 
 #if defined(BLACK_HOLE_ON_CREATE) && (BLACK_HOLE_ON_CREATE == 1)
-    mUniverse.addBlackHole(window_width/2, window_height/2);
+    mUniverse.addStar(window_width/2, window_height/2);
 #endif
 
     // Game loop
@@ -204,12 +203,8 @@ int Game::run() {
         for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
             // Select particle colour
             switch (p->type) {
-                case PARTICLE_BLACK_HOLE:
+                case PARTICLE_STAR:
                     particleColor = {0xFF, 0x3F, 0x00, 0xFF};
-                    break;
-
-                case PARTICLE_WHITE_HOLE:
-                    particleColor = {0x00, 0x3F, 0xFF, 0xFF};
                     break;
 
                 case PARTICLE_PLANET:
@@ -348,10 +343,6 @@ void Game::handle_events() {
                         mGameState.fieldView? "ON" : "OFF");
 #endif
 
-            } else if (event.key.keysym.sym == SDLK_LSHIFT) {
-                mGameState.antimatter = true;
-                LOGD("%s:\tPressed LSHIFT -> enable anti-matter%s\n", __func__);
-
             } else if (event.key.keysym.sym == SDLK_UP) {
 #if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
                 if (mGameState.fieldView) {
@@ -391,13 +382,6 @@ void Game::handle_events() {
 
             break;
 
-        case SDL_KEYUP:
-            if (event.key.keysym.sym == SDLK_LSHIFT) {
-                mGameState.antimatter = false;
-                LOGD("%s:\tReleased A -> disable anti-matter%s\n", __func__);
-            }
-            break;
-
         case SDL_MOUSEMOTION:
             if (mLauncher.isClicked()) {
                 int mx, my;
@@ -412,8 +396,7 @@ void Game::handle_events() {
             if (event.button.button == SDL_BUTTON_LEFT) {
                 mLauncher.click(mx, my);
             } else if (event.button.button == SDL_BUTTON_RIGHT) {
-                if (!mGameState.antimatter) mUniverse.addBlackHole(mx, my);
-                else mUniverse.addWhiteHole(mx, my);
+                mUniverse.addStar(mx, my);
             }
             break;
         }
@@ -423,11 +406,8 @@ void Game::handle_events() {
                 if (!mLauncher.isClicked()) break;
                 mLauncher.release();
 
-                int dx = mLauncher.getStartX() - mLauncher.getEndX();
-                int dy = mLauncher.getStartY() - mLauncher.getEndY();
-
-                int ex = dx/10;
-                int ey = -dy/10;
+                const float dx = mLauncher.getStartX() - mLauncher.getEndX();
+                const float dy = mLauncher.getStartY() - mLauncher.getEndY();
 
                 mUniverse.addPlanet(
                     mLauncher.getStartX(),

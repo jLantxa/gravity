@@ -12,7 +12,6 @@ struct GameState {
     bool run;
     bool pause;
     bool fieldView;
-    bool antimatter;
 };
 
 struct Color {
