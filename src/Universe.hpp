@@ -1,10 +1,10 @@
 #ifndef _UNIVERSE_HPP_
 #define _UNIVERSE_HPP_
 
-#define BLACK_HOLE_MASS   50000
-#define BLACK_HOLE_R      12
-#define PLANET_MASS 50
-#define PLANET_R    3
+#define BLACK_HOLE_MASS   10000
+#define BLACK_HOLE_R      15
+#define PLANET_MASS 1
+#define PLANET_R    2
 
 // TODO: Define pixel-to-space transforms
 // TODO: Define ticks-to-time transforms

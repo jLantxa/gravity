@@ -19,6 +19,7 @@ DEFAULT_FULLSCREEN=0
 # Simulator parameters
 BLACK_HOLE_ON_CREATE=0
 ENABLE_COLLISIONS=1
+ENABLE_FIELD=0
 
 # Field view subsample
 FIELD_VIEW_SUBSAMPLE_X = 4
@@ -46,7 +47,8 @@ endif
 # Params
 LDFLAGS += \
 	-DBLACK_HOLE_ON_CREATE=$(BLACK_HOLE_ON_CREATE) \
-	-DENABLE_COLLISIONS=$(ENABLE_COLLISIONS)
+	-DENABLE_COLLISIONS=$(ENABLE_COLLISIONS) \
+	-DENABLE_FIELD=$(ENABLE_FIELD)
 
 # Field subsampling
 LDFLAGS += \
@@ -68,7 +70,7 @@ OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp $(S
 all:
 	$(info Building target...)
 	@make init
-	$(CC) -I $(SRC) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(LDFLAGS) $(OBJS) -o $(BUILD)/$(TARGET)
+	$(CC) -I $(SRC) $(COMPILER_FLAGS) $(LDFLAGS) $(OBJS) -o $(BUILD)/$(TARGET) $(LINKER_FLAGS)
 
 run:
 	./$(BUILD)/$(TARGET)

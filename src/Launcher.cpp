@@ -17,8 +17,8 @@ void Launcher::click(int x, int y) {
 }
 
 void Launcher::move(int x, int y) {
-    end_x = 2*start_x - x; // Segment length
-    end_y = 2*start_y - y; // Segment length
+    end_x = x; // Segment length
+    end_y = y; // Segment length
 }
 
 void Launcher::release() {

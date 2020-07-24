@@ -54,7 +54,7 @@ void Universe::addPlanet(float x, float y, float vx, float vy) {
 void Universe::update() {
     LOGVV("Updating %d particles\n", mParticles.size());
 
-    float G = 2.0/FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
+    constexpr float G = 1.0/FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
 
     int i = 0;
     int j = 0;
@@ -64,8 +64,7 @@ void Universe::update() {
     float d, dx, dy, d3;    // Distance and cubed distance
     bool collision;
     for (auto pi = mParticles.begin(); pi < mParticles.end(); pi++, i++) {
-        collision = false;
-        if (!pi->fixed)
+        //if (!pi->fixed)
         {
             for (auto pj = mParticles.begin(); pj < mParticles.end(); pj++, j++) {
                 if (pi == pj) continue;
@@ -77,14 +76,24 @@ void Universe::update() {
                 d = sqrt(dx*dx + dy*dy);
                 d3 = d*d*d;
 
-                #ifdef ENABLE_COLLISIONS    // Particles collide with black holes
+                #if defined(ENABLE_COLLISIONS) && (ENABLE_COLLISIONS == 1)    // Particles collide with black holes
                 if (d < pi->r + pj->r) {
                     LOGI("Particles %d and %d collided\n", i, j);
                     // Bring the two particles together if not fixed
-                    if (pj->fixed) {
-                        collision = true;
-                    }
-                    continue;
+                    collision = true;
+                    float new_mass = pi->mass + pj->mass;
+                    float new_radius = sqrt(pow(pi->r, 2) + pow(pj->r, 2));
+                    auto heavier = (pi->mass >= pj->mass)? pi : pj;
+                    auto weaker = (pi->mass < pj->mass)? pi : pj;
+                    heavier->vx = (heavier->mass * heavier->vx) + (weaker->mass * weaker->vx);
+                    heavier->vx /= new_mass;
+                    heavier->vy = (heavier->mass * heavier->vy) + (weaker->mass * weaker->vy);
+                    heavier->vy /= new_mass;
+                    heavier->mass = new_mass;
+                    heavier->r = new_radius;
+                    mParticles.erase(weaker);
+
+                    break;
                 }
                 #endif // ENABLE_COLLISIONS
 
@@ -97,17 +106,13 @@ void Universe::update() {
                 LOGVV("%s:\ta%d = (%f, %f) [%f]\n", __func__,
                     i, aix, aiy, sqrt(aix*aix + aiy*aiy));
             }
-
-            if (collision) {
-                mParticles.erase(pi);
-            }
         }
     }
 
     // Update positions
     i = 0;
     for (auto p = mParticles.begin(); p < mParticles.end(); p++, i++) {
-        if (p->fixed) continue;
+        //if (p->fixed) continue;
 
         p->x += p->vx;
         p->y += p->vy;

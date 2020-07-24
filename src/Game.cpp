@@ -159,8 +159,8 @@ void Game::drawLauncher() {
     SDL_RenderDrawLine(mRenderer,
             mLauncher.getStartX(),
             mLauncher.getStartY(),
-            2*mLauncher.getStartX() - mLauncher.getEndX(),  // Segment length
-            2*mLauncher.getStartY() - mLauncher.getEndY()); // Segment length
+            mLauncher.getEndX(),
+            mLauncher.getEndY());
 }
 
 int Game::run() {
@@ -168,9 +168,9 @@ int Game::run() {
     int window_width, window_height;
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
 
-    #ifndef BLACK_HOLE_ON_CREATE || BLACK_HOLE_ON_CREATE == 0
+#if defined(BLACK_HOLE_ON_CREATE) && (BLACK_HOLE_ON_CREATE == 1)
     mUniverse.addBlackHole(window_width/2, window_height/2);
-    #endif
+#endif
 
     // Game loop
     mTimer.start();
@@ -193,9 +193,11 @@ int Game::run() {
         SDL_RenderClear(mRenderer);
 
         // Render the field if enabled
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
         if (mGameState.fieldView) {
             renderField(mFieldViewSubsambpleX, mFieldViewSubsambpleY);
         }
+#endif
 
         // Draw particles
         Color particleColor;
@@ -203,15 +205,15 @@ int Game::run() {
             // Select particle colour
             switch (p->type) {
                 case PARTICLE_BLACK_HOLE:
-                    particleColor = {0xFF, 0xFF, 0x128, 0xFF};
+                    particleColor = {0xFF, 0x3F, 0x00, 0xFF};
                     break;
 
                 case PARTICLE_WHITE_HOLE:
-                    particleColor = {0x128, 0xFF, 0xFF, 0xFF};
+                    particleColor = {0x00, 0x3F, 0xFF, 0xFF};
                     break;
 
                 case PARTICLE_PLANET:
-                    particleColor = {0x33, 0x33, 0xFF, 0xFF};
+                    particleColor = {0xFF, 0xFF, 0xFF, 0xFF};
                     break;
 
                 default:
@@ -251,6 +253,7 @@ int Game::run() {
     return 0;
 }
 
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
 void Game::renderField(int subsample_x, int subsample_y) {
     int window_width, window_height;
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
@@ -294,6 +297,8 @@ void Game::renderField(int subsample_x, int subsample_y) {
         }
     }
 }
+#endif
+
 void Game::handle_events() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
@@ -336,42 +341,52 @@ void Game::handle_events() {
                 LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
                     bFullScreen? "ON" : "OFF");
 
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
             } else if (event.key.keysym.sym == SDLK_g) {
                 mGameState.fieldView = !mGameState.fieldView;
                 LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
                         mGameState.fieldView? "ON" : "OFF");
+#endif
 
             } else if (event.key.keysym.sym == SDLK_LSHIFT) {
                 mGameState.antimatter = true;
                 LOGD("%s:\tPressed LSHIFT -> enable anti-matter%s\n", __func__);
 
             } else if (event.key.keysym.sym == SDLK_UP) {
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
                 if (mGameState.fieldView) {
                     mFieldViewSubsambpleY++;
                     LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
                 }
+#endif
 
             } else if (event.key.keysym.sym == SDLK_DOWN) {
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
                 if (mGameState.fieldView) {
                     if (mFieldViewSubsambpleY > 1) {
                         mFieldViewSubsambpleY--;
                         LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n", __func__, mFieldViewSubsambpleY);
                     }
                 }
+#endif
 
             } else if (event.key.keysym.sym == SDLK_LEFT) {
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
                 if (mGameState.fieldView) {
                     if (mFieldViewSubsambpleX > 1) {
                         mFieldViewSubsambpleX--;
                         LOGD("%s:\tPressed UP -> set field view subsample X to %d\n", __func__, mFieldViewSubsambpleX);
                     }
                 }
+#endif
 
             } else if (event.key.keysym.sym == SDLK_RIGHT) {
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
                 if (mGameState.fieldView) {
                     mFieldViewSubsambpleX++;
                     LOGD("%s:\tPressed UP -> set field view subsample X to %d\n", __func__, mFieldViewSubsambpleX);
                 }
+#endif
             }
 
             break;
@@ -408,17 +423,17 @@ void Game::handle_events() {
                 if (!mLauncher.isClicked()) break;
                 mLauncher.release();
 
-                int dx = mLauncher.getEndX() - mLauncher.getStartX();
-                int dy = mLauncher.getEndY() - mLauncher.getStartY();
+                int dx = mLauncher.getStartX() - mLauncher.getEndX();
+                int dy = mLauncher.getStartY() - mLauncher.getEndY();
 
-                int ex = 1.0 - exp(-abs(dx));
-                int ey = 1.0 - exp(-abs(dy));
+                int ex = dx/10;
+                int ey = -dy/10;
 
                 mUniverse.addPlanet(
                     mLauncher.getStartX(),
                     mLauncher.getStartY(),
-                    ex*dx / FRAMES_PER_SECOND,  // Pixels per second
-                    ey*dy / FRAMES_PER_SECOND);
+                    dx / FRAMES_PER_SECOND,  // Pixels per second
+                    dy / FRAMES_PER_SECOND);
             }
 
             break;
