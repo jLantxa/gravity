@@ -121,7 +121,6 @@ void Universe::update() {
     // Calculate net accellerations
     float aix, aiy; // Instantaneous accelerations
     float d, dx, dy, d3;    // Distance and cubed distance
-    bool collision;
     for (auto pi = mParticles.begin(); pi < mParticles.end(); pi++, i++) {
         for (auto pj = mParticles.begin(); pj < mParticles.end(); pj++, j++) {
             if (pi == pj) continue;
@@ -136,11 +135,9 @@ void Universe::update() {
             d = sqrt(dx*dx + dy*dy);
             d3 = d*d*d;
 
-            #if defined(ENABLE_COLLISIONS) && (ENABLE_COLLISIONS == 1)    // Particles collide with black holes
             if (d < part_i->r + part_j->r) {
                 LOGI("Particles %d and %d collided\n", i, j);
                 // Bring the two particles together
-                collision = true;
                 float new_mass = part_i->mass + part_j->mass;
                 float new_radius = sqrt(pow(part_i->r, 2) + pow(part_j->r, 2));
                 auto heavier = (part_i->mass >= part_j->mass)? part_i : part_j;
@@ -153,10 +150,8 @@ void Universe::update() {
                 heavier->mass = new_mass;
                 heavier->r = new_radius;
                 mParticles.erase(weaker_it);
-
                 break;
             }
-            #endif // ENABLE_COLLISIONS
 
             aix = part_j->mass * dx / d3;
             aiy = part_j->mass * dy / d3;

@@ -265,12 +265,13 @@ void Game::renderField(int subsample_x, int subsample_y) {
             float ay = 0.0;
             float d, dx, dy, d3;
             for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
-                dx = (x - p->x);
-                dy = (y - p->y);
+                Particle* particle = *p;
+                dx = (x - particle->x);
+                dy = (y - particle->y);
                 d = sqrt(dx*dx + dy*dy);
                 d3 = d*d*d;
-                ax += p->mass * dx/d3;
-                ay += p->mass * dy/d3;
+                ax += particle->mass * dx/d3;
+                ay += particle->mass * dy/d3;
             }
 
             float g = sqrt(ax*ax + ay*ay);
