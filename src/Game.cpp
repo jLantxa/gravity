@@ -115,10 +115,12 @@ void Game::eraseOOBParticles() {
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
 
     for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
-        if (p->x < -10*window_width || p->x > 11*window_width ||
-            p->y < -10*window_height || p->x > 11*window_height)
+        Particle* particle = *p;
+        if (particle->x < -10*window_width || particle->x > 11*window_width ||
+            particle->y < -10*window_height || particle->x > 11*window_height)
         {
             mUniverse.particles().erase(p);
+            delete particle;
             LOGI("%s:\tErased OOB particle\n", __func__);
         }
     }
@@ -201,24 +203,27 @@ int Game::run() {
         // Draw particles
         Color particleColor;
         for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
+            Particle* particle = *p;
             // Select particle colour
-            switch (p->type) {
-                case PARTICLE_STAR:
-                    particleColor = {0xFF, 0x3F, 0x00, 0xFF};
-                    break;
+            particleColor = particle->getColor();
 
-                case PARTICLE_PLANET:
-                    particleColor = {0xFF, 0xFF, 0xFF, 0xFF};
-                    break;
-
-                default:
-                    particleColor = {0xFF, 0xFF, 0xFF, 0xFF};
+            Color trailColor;
+            for (unsigned int i = 1; i < particle->trail.size(); i++) {
+                const float frac = static_cast<float>(i) / particle->trail.size();
+                particle->getTrailColor(frac, trailColor);
+                setRenderColor(trailColor);
+                SDL_RenderDrawLine(mRenderer,
+                    particle->trail[i].x, particle->trail[i].y,
+                    particle->trail[i-1].x, particle->trail[i-1].y);
+            }
+            if (frame % 2 ==0) {
+                particle->updateTrail();
             }
 
             // Render particle
             setRenderColor(particleColor);
             filledCircleRGBA(mRenderer,
-                    p->x, p->y, p->r,
+                    particle->x, particle->y, particle->r,
                     particleColor.r,
                     particleColor.g,
                     particleColor.b,
@@ -256,7 +261,6 @@ void Game::renderField(int subsample_x, int subsample_y) {
     float max_g = 0.0;
     for (int x = 0; x < window_width; x+=subsample_x) {
         for (int y = 0; y < window_height; y+=subsample_y) {
-
             float ax = 0.0;
             float ay = 0.0;
             float d, dx, dy, d3;

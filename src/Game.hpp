@@ -14,13 +14,6 @@ struct GameState {
     bool fieldView;
 };
 
-struct Color {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    Uint8 a;
-};
-
 class Game {
 private:
     Color BACKGROUND_COLOR = {0x00, 0x00, 0x00, 0xFF};

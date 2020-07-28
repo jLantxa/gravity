@@ -9,41 +9,68 @@
 // TODO: Define pixel-to-space transforms
 // TODO: Define ticks-to-time transforms
 
+#include <deque>
 #include <vector>
 
-enum ParticleType {
-    PARTICLE_STAR,
-    PARTICLE_PLANET,
-    PARTICLE_UNDEFINED,
+constexpr unsigned int MAX_TRAIL_SIZE = 64;
+
+struct Point {
+    int x;
+    int y;
 };
 
-struct Particle {
-    ParticleType type;
+class Particle {
+public:
+    Particle(float mass, float r, float x, float y, float vx, float vy);
+    virtual ~Particle() = default;
+
+    void updateTrail();
+    virtual void getTrailColor(float frac, Color& color);
+    virtual Color getColor();
+
     float mass;
     float r;
     float x;
     float y;
     float vx;
     float vy;
+    std::deque<Point> trail;
 };
 
-class Universe {
-private:
-    std::vector<Particle> mParticles;
+class Planet : public Particle {
+public:
+    Planet(float r, float x, float y, float vx, float vy);
+    virtual ~Planet() = default;
+    void getTrailColor(float frac, Color& color) override;
+    Color getColor() override;
+};
 
+class Star : public Particle {
+public:
+    Star(float x, float y);
+    virtual ~Star() = default;
+    void getTrailColor(float frac, Color& color) override;
+    Color getColor() override;
+};
+
+
+class Universe {
 public:
     Universe();
     virtual ~Universe();
 
-    std::vector<Particle>& particles();
+    std::vector<Particle*>& particles();
 
     void update();
 
-    void addParticle(ParticleType type, float mass, float r, float x, float y, float vx, float vy);
+    void addParticle(float mass, float r, float x, float y, float vx, float vy);
     void addStar(float x, float y);
     void addPlanet(float x, float y, float vx, float vy);
 
     void reset();
+
+private:
+    std::vector<Particle*> mParticles;
 };
 
 #endif
