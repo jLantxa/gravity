@@ -106,10 +106,6 @@ void Game::pause(bool state) {
     }
 }
 
-bool Game::togglePause() {
-    pause(!mGameState.pause);
-}
-
 void Game::eraseOOBParticles() {
     int window_width, window_height;
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
@@ -186,57 +182,57 @@ int Game::run() {
         /* ======== LOGIC ======== */
         if (!mGameState.pause) {
             mUniverse.update();
-        }
 
-        /* ======== DRAW ======== */
-        // Clear screen
-        setRenderColor(BACKGROUND_COLOR);
-        SDL_RenderClear(mRenderer);
+            /* ======== DRAW ======== */
+            // Clear screen
+            setRenderColor(BACKGROUND_COLOR);
+            SDL_RenderClear(mRenderer);
 
-        // Render the field if enabled
+            // Render the field if enabled
 #if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
-        if (mGameState.fieldView) {
-            renderField(mFieldViewSubsambpleX, mFieldViewSubsambpleY);
-        }
+            if (mGameState.fieldView) {
+                renderField(mFieldViewSubsambpleX, mFieldViewSubsambpleY);
+            }
 #endif
 
-        // Draw particles
-        Color particleColor;
-        for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
-            Particle* particle = *p;
-            // Select particle colour
-            particleColor = particle->getColor();
+            // Draw particles
+            Color particleColor;
+            for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
+                Particle* particle = *p;
+                // Select particle colour
+                particleColor = particle->getColor();
 
-            Color trailColor;
-            for (unsigned int i = 1; i < particle->trail.size(); i++) {
-                const float frac = static_cast<float>(i) / particle->trail.size();
-                particle->getTrailColor(frac, trailColor);
-                setRenderColor(trailColor);
-                SDL_RenderDrawLine(mRenderer,
-                    particle->trail[i].x, particle->trail[i].y,
-                    particle->trail[i-1].x, particle->trail[i-1].y);
-            }
-            if (frame % 2 ==0) {
-                particle->updateTrail();
+                Color trailColor;
+                for (unsigned int i = 1; i < particle->trail.size(); i++) {
+                    const float frac = static_cast<float>(i) / particle->trail.size();
+                    particle->getTrailColor(frac, trailColor);
+                    setRenderColor(trailColor);
+                    SDL_RenderDrawLine(mRenderer,
+                        particle->trail[i].x, particle->trail[i].y,
+                        particle->trail[i-1].x, particle->trail[i-1].y);
+                }
+                if (frame % 2 ==0) {
+                    particle->updateTrail();
+                }
+
+                // Render particle
+                setRenderColor(particleColor);
+                filledCircleRGBA(mRenderer,
+                        particle->x, particle->y, particle->r,
+                        particleColor.r,
+                        particleColor.g,
+                        particleColor.b,
+                        particleColor.a);
             }
 
-            // Render particle
-            setRenderColor(particleColor);
-            filledCircleRGBA(mRenderer,
-                    particle->x, particle->y, particle->r,
-                    particleColor.r,
-                    particleColor.g,
-                    particleColor.b,
-                    particleColor.a);
+            // Draw launcher
+            drawLauncher();
+
+            // Commit graphics
+            SDL_RenderPresent(mRenderer);
         }
 
-        // Draw launcher
-        drawLauncher();
-
-        // Commit graphics
-        SDL_RenderPresent(mRenderer);
-
-        //Sleep until next frame remaining frame time
+        // Sleep until next frame remaining frame time
         int slack = (1000 / FRAMES_PER_SECOND) - mTimer.get_ticks();
         if (slack > 0) {
             int slack = (1000 / FRAMES_PER_SECOND) - mTimer.get_ticks();
@@ -322,18 +318,20 @@ void Game::handle_events() {
                 }
 
             } else if (event.key.keysym.sym == SDLK_p) {
-                togglePause();
+                if (!mLauncher.isClicked()) {
+                    pause(!mGameState.pause);
 
-                LOGD("%s:\tPressed R -> toggle pause to %s\n", __func__,
-                    (mGameState.pause==true)?"true":"false");
+                    LOGD("%s:\tPressed P -> toggle pause to %s\n", __func__,
+                        (mGameState.pause==true)?"true":"false");
 
-                const char* title;
-                if (mGameState.pause) title = WINDOW_TITLE_PAUSE;
-                else title = WINDOW_TITLE;
-                SDL_SetWindowTitle(mWindow, title);
+                    const char* title;
+                    if (mGameState.pause) title = WINDOW_TITLE_PAUSE;
+                    else title = WINDOW_TITLE;
+                    SDL_SetWindowTitle(mWindow, title);
+                }
 
             } else if (event.key.keysym.sym == SDLK_r) {
-                LOGD("%s:\tPressed P -> reset universe\n", __func__);
+                LOGD("%s:\tPressed R -> reset universe\n", __func__);
                 mUniverse.reset();
 
             } else if (event.key.keysym.sym == SDLK_f) {
@@ -396,6 +394,10 @@ void Game::handle_events() {
             break;
 
         case SDL_MOUSEBUTTONDOWN: {
+            if (mGameState.pause) {
+                break;
+            }
+
             int mx, my;
             SDL_GetMouseState(&mx, &my);
             if (event.button.button == SDL_BUTTON_LEFT) {

@@ -7,7 +7,7 @@
 #    LOGI  | x | x | x | x |   # Error
 #    LOGE  | x | x | x | x |   # Information
 ################################
-LOG_LEVEL=1
+LOG_LEVEL=3
 
 # Window parameters
 WINDOW_WIDTH=800
@@ -18,7 +18,7 @@ DEFAULT_FULLSCREEN=0
 
 # Simulator parameters
 BLACK_HOLE_ON_CREATE=0
-ENABLE_FIELD=1
+ENABLE_FIELD=0
 
 # Field view subsample
 FIELD_VIEW_SUBSAMPLE_X = 4

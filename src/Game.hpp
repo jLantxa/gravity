@@ -25,7 +25,6 @@ private:
     SDL_Renderer* mRenderer;
     bool bFullScreen = false;
     bool toggleFullScreen();
-    bool togglePause();
 
     Universe mUniverse;
     Launcher mLauncher;
