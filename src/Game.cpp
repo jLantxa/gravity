@@ -195,13 +195,8 @@ int Game::run() {
             }
 #endif
 
-            // Draw particles
-            Color particleColor;
             for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
                 Particle* particle = *p;
-                // Select particle colour
-                particleColor = particle->getColor();
-
                 Color trailColor;
                 for (unsigned int i = 1; i < particle->trail.size(); i++) {
                     const float frac = static_cast<float>(i) / particle->trail.size();
@@ -214,6 +209,14 @@ int Game::run() {
                 if (frame % 2 ==0) {
                     particle->updateTrail();
                 }
+            }
+
+            // Draw particles
+            Color particleColor;
+            for (auto p = mUniverse.particles().begin(); p < mUniverse.particles().end(); p++) {
+                Particle* particle = *p;
+                // Select particle colour
+                particleColor = particle->getColor();
 
                 // Render particle
                 setRenderColor(particleColor);

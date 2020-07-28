@@ -12,7 +12,7 @@
 #include <deque>
 #include <vector>
 
-constexpr unsigned int MAX_TRAIL_SIZE = 64;
+constexpr unsigned int MAX_TRAIL_SIZE = 128;
 
 struct Point {
     int x;
