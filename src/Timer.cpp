@@ -1,6 +1,6 @@
 /*
- * Bricks
- * Copyright (C) 2020  Javier Lancha Vázquez
+ * gravity
+ * Copyright (C) 2017  Javier Lancha Vázquez
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ void Timer::stop()
 
 void Timer::pause()
 {
-    //If the timer is running and isn't already paused
+    // If the timer is running and isn't already paused
     if ((started == true) && (paused == false)) {
         paused = true;
         pausedTicks = SDL_GetTicks() - startTicks;
