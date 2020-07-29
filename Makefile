@@ -55,6 +55,7 @@ LDFLAGS += \
 CC=g++ -std=c++17
 
 SRC=src
+INCLUDE=include
 BUILD=build
 
 COMPILER_FLAGS=-w -O3
@@ -67,7 +68,7 @@ OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp $(S
 all:
 	$(info Building target...)
 	@make init
-	$(CC) -I $(SRC) $(COMPILER_FLAGS) $(LDFLAGS) $(OBJS) -o $(BUILD)/$(TARGET) $(LINKER_FLAGS)
+	$(CC) -I $(INCLUDE)/ $(COMPILER_FLAGS) $(LDFLAGS) $(OBJS) -o $(BUILD)/$(TARGET) $(LINKER_FLAGS)
 
 run:
 	./$(BUILD)/$(TARGET)
