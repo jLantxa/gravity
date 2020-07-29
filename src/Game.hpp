@@ -8,13 +8,23 @@
 #include "Timer.hpp"
 #include "Launcher.hpp"
 
-struct GameState {
-    bool run;
-    bool pause;
-    bool fieldView;
-};
-
 class Game {
+public:
+    struct GameState {
+        bool run;
+        bool pause;
+        bool fieldView;
+    };
+
+    Game();
+    virtual ~Game();
+
+    int init(window_params* wparams);
+    int run();
+
+    void quit();
+    void pause(bool state);
+
 private:
     Color BACKGROUND_COLOR = {0x00, 0x00, 0x00, 0xFF};
 
@@ -39,16 +49,6 @@ private:
     void renderField(int subsample_x, int subsample_y);
 
     void eraseOOBParticles();
-
-public:
-    Game();
-    virtual ~Game();
-
-    int init(window_params* wparams);
-    int run();
-
-    void quit();
-    void pause(bool state);
 };
 
 #endif

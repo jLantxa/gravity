@@ -165,7 +165,7 @@ int Game::run() {
     int window_width, window_height;
     SDL_GetWindowSize(mWindow, &window_width, &window_height);
 
-#if defined(BLACK_HOLE_ON_CREATE) && (BLACK_HOLE_ON_CREATE == 1)
+#if defined(STAR_ON_CREATE) && (STAR_ON_CREATE == 1)
     mUniverse.addStar(window_width/2, window_height/2);
 #endif
 
@@ -274,7 +274,7 @@ void Game::renderField(int subsample_x, int subsample_y) {
             }
 
             float g = sqrt(ax*ax + ay*ay);
-            float gth = BLACK_HOLE_MASS / 2000;
+            float gth = STAR_MASS / 2000;
             if (g/gth > 1.0) g = gth;
 
             int aR = 0;   int aG = 0; int aB = 0;  // RGB for our 1st color

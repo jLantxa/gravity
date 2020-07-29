@@ -4,20 +4,19 @@
 #    LOGVV | x |   |   |   |   # Very verbose
 #    LOGV  | x | x |   |   |   # Verbose
 #    LOGD  | x | x | x |   |   # Debug
-#    LOGI  | x | x | x | x |   # Error
-#    LOGE  | x | x | x | x |   # Information
+#    LOGI  | x | x | x | x |   # Information
+#    LOGE  | x | x | x | x | x # Error
 ################################
-LOG_LEVEL=3
+LOG_LEVEL=1
 
 # Window parameters
-WINDOW_WIDTH=800
-WINDOW_HEIGHT=600
 WINDOW_RESIZABLE=1
 ENABLE_FULLSCREEN=1
-DEFAULT_FULLSCREEN=0
+DEFAULT_FULLSCREEN=1
 
 # Simulator parameters
-BLACK_HOLE_ON_CREATE=0
+STAR_ON_CREATE=0
+FIXED_STARS=1
 ENABLE_FIELD=0
 
 # Field view subsample
@@ -31,8 +30,6 @@ TARGET=gravity
 
 # Window
 LDFLAGS += \
-	-DWINDOW_WIDTH=$(WINDOW_WIDTH) \
-	-DWINDOW_HEIGHT=$(WINDOW_HEIGHT) \
 	-DENABLE_FULLSCREEN=$(ENABLE_FULLSCREEN) \
 	-DDEFAULT_FULLSCREEN=$(DEFAULT_FULLSCREEN)
 
@@ -45,9 +42,10 @@ endif
 
 # Params
 LDFLAGS += \
-	-DBLACK_HOLE_ON_CREATE=$(BLACK_HOLE_ON_CREATE) \
+	-DSTAR_ON_CREATE=$(STAR_ON_CREATE) \
 	-DENABLE_COLLISIONS=$(ENABLE_COLLISIONS) \
-	-DENABLE_FIELD=$(ENABLE_FIELD)
+	-DENABLE_FIELD=$(ENABLE_FIELD) \
+	-DFIXED_STARS=$(FIXED_STARS)
 
 # Field subsampling
 LDFLAGS += \

@@ -46,7 +46,7 @@ Color Planet::getColor() {
 }
 
 Star::Star(float x, float y)
-:   Particle(BLACK_HOLE_MASS, BLACK_HOLE_R, x, y, 0, 0)
+:   Particle(STAR_MASS, STAR_R, x, y, 0, 0)
 {
 
 }
@@ -70,6 +70,11 @@ void Particle::getTrailColor(float frac, Color& color) {
     color.a = 0xFF * (1 - frac);
 }
 
+void Particle::update() {
+    x += vx;
+    y += vy;
+}
+
 void Planet::getTrailColor(float frac, Color& color) {
     color.r = 0x00;
     color.g = 0x00;
@@ -83,6 +88,13 @@ void Star::getTrailColor(float frac, Color& color) {
     color.b = 0x00;
     color.a = 0xFF * (1 - frac);
 }
+
+#if defined(FIXED_STARS) && (FIXED_STARS == 1)
+void Star::update() {
+    vx = 0;
+    vy = 0;
+}
+#endif
 
 void Universe::reset() {
     mParticles.clear();
@@ -165,15 +177,7 @@ void Universe::update() {
     }
 
     // Update positions
-    i = 0;
-    for (auto p = mParticles.begin(); p < mParticles.end(); p++, i++) {
-        Particle* particle = *p;
-        particle->x += particle->vx;
-        particle->y += particle->vy;
-
-        LOGVV("%s:\tr%d = (%f, %f) [%f]\n", __func__,
-            i, particle->x, particle->y, sqrt(particle->x*particle->x + particle->y*particle->y));
-        LOGVV("%s:\tv%d = (%f, %f) [%f]\n", __func__,
-            i, particle->vx, particle->vy, sqrt(particle->vx*particle->vx + particle->vy*particle->vy));
+    for (Particle* particle : mParticles) {
+        particle->update();
     }
 }

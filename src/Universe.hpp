@@ -1,8 +1,8 @@
 #ifndef _UNIVERSE_HPP_
 #define _UNIVERSE_HPP_
 
-#define BLACK_HOLE_MASS   10000
-#define BLACK_HOLE_R      15
+#define STAR_MASS   10000
+#define STAR_R      15
 #define PLANET_MASS 1
 #define PLANET_R    2
 
@@ -27,6 +27,7 @@ public:
     void updateTrail();
     virtual void getTrailColor(float frac, Color& color);
     virtual Color getColor();
+    virtual void update();
 
     float mass;
     float r;
@@ -41,6 +42,7 @@ class Planet : public Particle {
 public:
     Planet(float r, float x, float y, float vx, float vy);
     virtual ~Planet() = default;
+
     void getTrailColor(float frac, Color& color) override;
     Color getColor() override;
 };
@@ -49,8 +51,13 @@ class Star : public Particle {
 public:
     Star(float x, float y);
     virtual ~Star() = default;
+
     void getTrailColor(float frac, Color& color) override;
     Color getColor() override;
+
+#if defined(FIXED_STARS) && (FIXED_STARS == 1)
+    void update() override;
+#endif
 };
 
 

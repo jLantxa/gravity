@@ -9,10 +9,11 @@ int main(int argc, char* argv[])
     Game game;
 
     // Fill window params
-    window_params wparams;
-    wparams.title = WINDOW_TITLE;
-    wparams.width = WINDOW_WIDTH;
-    wparams.height = WINDOW_HEIGHT;
+    window_params wparams {
+        .title  = WINDOW_TITLE,
+        .width  = WINDOW_WIDTH,
+        .height = WINDOW_HEIGHT
+    };
 
     ret = game.init(&wparams);
     if (ret != 0) {

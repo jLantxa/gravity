@@ -27,8 +27,11 @@
 #endif
 
 #if LOG_LEVEL >= 1
-#   define LOGE printf("[E] "); \
-    printf
 #   define LOGI printf("[I] "); \
+    printf
+#endif
+
+#if LOG_LEVEL >= 0
+#   define LOGE printf("[E] "); \
     printf
 #endif
