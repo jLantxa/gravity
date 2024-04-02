@@ -14,31 +14,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #include "Launcher.hpp"
 
-Launcher::Launcher() {
-    clicked = false;
-}
+Launcher::Launcher() { clicked = false; }
 
-Launcher::~Launcher() {
-
-}
+Launcher::~Launcher() {}
 
 void Launcher::click(int x, int y) {
-    clicked = true;
-    start_x = x;
-    start_y = y;
-    end_x = x;
-    end_y = y;
+  clicked = true;
+  start_x = x;
+  start_y = y;
+  end_x = x;
+  end_y = y;
 }
 
 void Launcher::move(int x, int y) {
-    end_x = x; // Segment length
-    end_y = y; // Segment length
+  end_x = x; // Segment length
+  end_y = y; // Segment length
 }
 
-void Launcher::release() {
-    clicked = false;
-}
+void Launcher::release() { clicked = false; }

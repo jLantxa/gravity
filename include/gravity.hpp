@@ -14,31 +14,35 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #ifndef _GRAVITY_HPP_
 #define _GRAVITY_HPP_
 
+#include <string>
+
 #include <SDL2/SDL.h>
 
-#define WINDOW_TITLE "Gravity"
-#define WINDOW_TITLE_PAUSE "Gravity - PAUSED"
-#define WINDOW_WIDTH  800
-#define WINDOW_HEIGHT 600
+namespace constants {
+const std::string WINDOW_TITLE{"Gravity"};
+const std::string WINDOW_TITLE_PAUSE{"Gravity - PAUSED"};
+constexpr int WINDOW_WIDTH = 800;
+constexpr int WINDOW_HEIGHT = 600;
 
-#define FRAMES_PER_SECOND 60
+constexpr int FRAMES_PER_SECOND = 60;
+} // namespace constants
 
 struct window_params {
-    char* title;
-    int width;
-    int height;
+  const char *title;
+  int width;
+  int height;
 };
 
 struct Color {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    Uint8 a;
+  Uint8 r;
+  Uint8 g;
+  Uint8 b;
+  Uint8 a;
 };
 
 #endif

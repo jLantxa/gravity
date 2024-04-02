@@ -14,32 +14,32 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #ifndef _LAUNCHER_HPP_
 #define _LAUNCHER_HPP_
 
 class Launcher {
 private:
-    bool clicked;
-    int start_x;
-    int start_y;
-    int end_x;
-    int end_y;
+  bool clicked;
+  int start_x;
+  int start_y;
+  int end_x;
+  int end_y;
 
 public:
-    Launcher();
-    ~Launcher();
+  Launcher();
+  ~Launcher();
 
-    void click(int x, int y);
-    void move(int x, int y);
-    void release();
+  void click(int x, int y);
+  void move(int x, int y);
+  void release();
 
-    bool isClicked() {return clicked;}
-    int getStartX() {return start_x;}
-    int getStartY() {return start_y;}
-    int getEndX() {return end_x;}
-    int getEndY() {return end_y;}
+  bool isClicked() { return clicked; }
+  int getStartX() { return start_x; }
+  int getStartY() { return start_y; }
+  int getEndX() { return end_x; }
+  int getEndY() { return end_y; }
 };
 
 #endif

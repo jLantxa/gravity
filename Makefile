@@ -12,7 +12,7 @@ LOG_LEVEL=1
 # Window parameters
 WINDOW_RESIZABLE=1
 ENABLE_FULLSCREEN=1
-DEFAULT_FULLSCREEN=1
+DEFAULT_FULLSCREEN=0
 
 # Simulator parameters
 STAR_ON_CREATE=0
@@ -52,14 +52,15 @@ LDFLAGS += \
 	-DFIELD_VIEW_SUBSAMPLE_Y=$(FIELD_VIEW_SUBSAMPLE_Y) \
 	-DFIELD_VIEW_SUBSAMPLE_X=$(FIELD_VIEW_SUBSAMPLE_X)
 
-CC=g++ -std=c++17
-
 SRC=src
 INCLUDE=include
 BUILD=build
 
-COMPILER_FLAGS=-w -O3
-LINKER_FLAGS=-lm -lSDL2 -lSDL2_gfx
+COMPILER_FLAGS += \
+	-std=c++20 \
+	-O3
+
+LINKER_FLAGS :=-lm -lSDL2 -lSDL2_gfx
 LDFLAGS += \
 	-DLOG_LEVEL=$(LOG_LEVEL) \
 
@@ -68,7 +69,7 @@ OBJS=$(SRC)/gravity.cpp $(SRC)/Game.cpp $(SRC)/Universe.cpp $(SRC)/Timer.cpp $(S
 all:
 	$(info Building target...)
 	@make init
-	$(CC) -I $(INCLUDE)/ $(COMPILER_FLAGS) $(LDFLAGS) $(OBJS) -o $(BUILD)/$(TARGET) $(LINKER_FLAGS)
+	$(CXX) -I $(INCLUDE)/ $(COMPILER_FLAGS) $(LDFLAGS) $(OBJS) -o $(BUILD)/$(TARGET) $(LINKER_FLAGS)
 
 run:
 	./$(BUILD)/$(TARGET)
