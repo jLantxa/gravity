@@ -16,11 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SDL2/SDL2_gfxPrimitives.h"
+#include "Game.hpp"
+
 #include <SDL2/SDL.h>
 
-#include "Game.hpp"
 #include "Launcher.hpp"
+#include "SDL2/SDL2_gfxPrimitives.h"
 #include "Timer.hpp"
 #include "Universe.hpp"
 #include "gravity.hpp"
@@ -66,11 +67,11 @@ int Game::init(window_params *wparams) {
     bFullScreen = true;
 #endif
 
-    mWindow = SDL_CreateWindow(wparams->title,          // title
-                               SDL_WINDOWPOS_UNDEFINED, // initial x
-                               SDL_WINDOWPOS_UNDEFINED, // initial y
-                               wparams->width,          // width
-                               wparams->height,         // height
+    mWindow = SDL_CreateWindow(wparams->title,           // title
+                               SDL_WINDOWPOS_UNDEFINED,  // initial x
+                               SDL_WINDOWPOS_UNDEFINED,  // initial y
+                               wparams->width,           // width
+                               wparams->height,          // height
                                windowFlag);
 
     if (mWindow == NULL) {
@@ -147,8 +148,7 @@ void Game::setRenderColor(Color color) {
 }
 
 void Game::drawLauncher() {
-  if (!mLauncher.isClicked())
-    return;
+  if (!mLauncher.isClicked()) return;
 
   // Blue
   Color launcherColor = {
@@ -278,15 +278,14 @@ void Game::renderField(int subsample_x, int subsample_y) {
 
       float g = sqrt(ax * ax + ay * ay);
       float gth = STAR_MASS / 2000;
-      if (g / gth > 1.0)
-        g = gth;
+      if (g / gth > 1.0) g = gth;
 
       int aR = 0;
       int aG = 0;
-      int aB = 0; // RGB for our 1st color
+      int aB = 0;  // RGB for our 1st color
       int bR = 128;
       int bG = 0;
-      int bB = 0; // RGB for our 2nd color
+      int bB = 0;  // RGB for our 2nd color
 
       Uint8 red = (bR - aR) * (g / gth) + aR;
       Uint8 green = (bG - aG) * (g / gth) + aG;
@@ -312,139 +311,139 @@ void Game::handle_events() {
     LOGVV("%s:\tEvent type = %d\n", __func__, event.type);
 
     switch (event.type) {
-    case SDL_QUIT:
-      LOGV("%s:\tSDL_QUIT event\n", __func__);
-      mGameState.run = false;
-      break;
+      case SDL_QUIT:
+        LOGV("%s:\tSDL_QUIT event\n", __func__);
+        mGameState.run = false;
+        break;
 
-    case SDL_KEYDOWN:
-      LOGD("%s:\tSDL_KEYDOWN event\n", __func__);
-      if (event.key.keysym.sym == SDLK_ESCAPE) {
-        if (bFullScreen) {
-          LOGD("%s:\tPressed ESCAPE -> exit fullscreen\n", __func__);
+      case SDL_KEYDOWN:
+        LOGD("%s:\tSDL_KEYDOWN event\n", __func__);
+        if (event.key.keysym.sym == SDLK_ESCAPE) {
+          if (bFullScreen) {
+            LOGD("%s:\tPressed ESCAPE -> exit fullscreen\n", __func__);
+            toggleFullScreen();
+          } else {
+            LOGD("%s:\tPressed ESCAPE -> set mGameState.run = false\n",
+                 __func__);
+            mGameState.run = false;
+          }
+
+        } else if (event.key.keysym.sym == SDLK_p) {
+          if (!mLauncher.isClicked()) {
+            pause(!mGameState.pause);
+
+            LOGD("%s:\tPressed P -> toggle pause to %s\n", __func__,
+                 (mGameState.pause == true) ? "true" : "false");
+
+            const char *title;
+            if (mGameState.pause)
+              title = constants::WINDOW_TITLE_PAUSE.c_str();
+            else
+              title = constants::WINDOW_TITLE.c_str();
+            SDL_SetWindowTitle(mWindow, title);
+          }
+
+        } else if (event.key.keysym.sym == SDLK_r) {
+          LOGD("%s:\tPressed R -> reset universe\n", __func__);
+          mUniverse.reset();
+
+        } else if (event.key.keysym.sym == SDLK_f) {
           toggleFullScreen();
-        } else {
-          LOGD("%s:\tPressed ESCAPE -> set mGameState.run = false\n", __func__);
-          mGameState.run = false;
-        }
-
-      } else if (event.key.keysym.sym == SDLK_p) {
-        if (!mLauncher.isClicked()) {
-          pause(!mGameState.pause);
-
-          LOGD("%s:\tPressed P -> toggle pause to %s\n", __func__,
-               (mGameState.pause == true) ? "true" : "false");
-
-          const char *title;
-          if (mGameState.pause)
-            title = constants::WINDOW_TITLE_PAUSE.c_str();
-          else
-            title = constants::WINDOW_TITLE.c_str();
-          SDL_SetWindowTitle(mWindow, title);
-        }
-
-      } else if (event.key.keysym.sym == SDLK_r) {
-        LOGD("%s:\tPressed R -> reset universe\n", __func__);
-        mUniverse.reset();
-
-      } else if (event.key.keysym.sym == SDLK_f) {
-        toggleFullScreen();
-        LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
-             bFullScreen ? "ON" : "OFF");
+          LOGD("%s:\tPressed F -> toggle fullscreen %s\n", __func__,
+               bFullScreen ? "ON" : "OFF");
 
 #if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
-      } else if (event.key.keysym.sym == SDLK_g) {
-        mGameState.fieldView = !mGameState.fieldView;
-        LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
-             mGameState.fieldView ? "ON" : "OFF");
+        } else if (event.key.keysym.sym == SDLK_g) {
+          mGameState.fieldView = !mGameState.fieldView;
+          LOGD("%s:\tPressed G -> toggle field view %s\n", __func__,
+               mGameState.fieldView ? "ON" : "OFF");
 #endif
 
-      } else if (event.key.keysym.sym == SDLK_UP) {
+        } else if (event.key.keysym.sym == SDLK_UP) {
 #if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
-        if (mGameState.fieldView) {
-          mFieldViewSubsambpleY++;
-          LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n",
-               __func__, mFieldViewSubsambpleY);
-        }
-#endif
-
-      } else if (event.key.keysym.sym == SDLK_DOWN) {
-#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
-        if (mGameState.fieldView) {
-          if (mFieldViewSubsambpleY > 1) {
-            mFieldViewSubsambpleY--;
+          if (mGameState.fieldView) {
+            mFieldViewSubsambpleY++;
             LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n",
                  __func__, mFieldViewSubsambpleY);
           }
-        }
 #endif
 
-      } else if (event.key.keysym.sym == SDLK_LEFT) {
+        } else if (event.key.keysym.sym == SDLK_DOWN) {
 #if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
-        if (mGameState.fieldView) {
-          if (mFieldViewSubsambpleX > 1) {
-            mFieldViewSubsambpleX--;
+          if (mGameState.fieldView) {
+            if (mFieldViewSubsambpleY > 1) {
+              mFieldViewSubsambpleY--;
+              LOGD("%s:\tPressed UP -> set field view subsample Y to %d\n",
+                   __func__, mFieldViewSubsambpleY);
+            }
+          }
+#endif
+
+        } else if (event.key.keysym.sym == SDLK_LEFT) {
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
+          if (mGameState.fieldView) {
+            if (mFieldViewSubsambpleX > 1) {
+              mFieldViewSubsambpleX--;
+              LOGD("%s:\tPressed UP -> set field view subsample X to %d\n",
+                   __func__, mFieldViewSubsambpleX);
+            }
+          }
+#endif
+
+        } else if (event.key.keysym.sym == SDLK_RIGHT) {
+#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
+          if (mGameState.fieldView) {
+            mFieldViewSubsambpleX++;
             LOGD("%s:\tPressed UP -> set field view subsample X to %d\n",
                  __func__, mFieldViewSubsambpleX);
           }
-        }
 #endif
-
-      } else if (event.key.keysym.sym == SDLK_RIGHT) {
-#if defined(ENABLE_FIELD) && (ENABLE_FIELD == 1)
-        if (mGameState.fieldView) {
-          mFieldViewSubsambpleX++;
-          LOGD("%s:\tPressed UP -> set field view subsample X to %d\n",
-               __func__, mFieldViewSubsambpleX);
         }
-#endif
-      }
 
-      break;
+        break;
 
-    case SDL_MOUSEMOTION:
-      if (mLauncher.isClicked()) {
+      case SDL_MOUSEMOTION:
+        if (mLauncher.isClicked()) {
+          int mx, my;
+          SDL_GetMouseState(&mx, &my);
+          mLauncher.move(mx, my);
+        }
+        break;
+
+      case SDL_MOUSEBUTTONDOWN: {
+        if (mGameState.pause) {
+          break;
+        }
+
         int mx, my;
         SDL_GetMouseState(&mx, &my);
-        mLauncher.move(mx, my);
-      }
-      break;
-
-    case SDL_MOUSEBUTTONDOWN: {
-      if (mGameState.pause) {
+        if (event.button.button == SDL_BUTTON_LEFT) {
+          mLauncher.click(mx, my);
+        } else if (event.button.button == SDL_BUTTON_RIGHT) {
+          mUniverse.addStar(mx, my);
+        }
         break;
       }
 
-      int mx, my;
-      SDL_GetMouseState(&mx, &my);
-      if (event.button.button == SDL_BUTTON_LEFT) {
-        mLauncher.click(mx, my);
-      } else if (event.button.button == SDL_BUTTON_RIGHT) {
-        mUniverse.addStar(mx, my);
-      }
-      break;
-    }
+      case SDL_MOUSEBUTTONUP: {
+        if (event.button.button == SDL_BUTTON_LEFT) {
+          if (!mLauncher.isClicked()) break;
+          mLauncher.release();
 
-    case SDL_MOUSEBUTTONUP: {
-      if (event.button.button == SDL_BUTTON_LEFT) {
-        if (!mLauncher.isClicked())
-          break;
-        mLauncher.release();
+          const float dx = mLauncher.getStartX() - mLauncher.getEndX();
+          const float dy = mLauncher.getStartY() - mLauncher.getEndY();
 
-        const float dx = mLauncher.getStartX() - mLauncher.getEndX();
-        const float dy = mLauncher.getStartY() - mLauncher.getEndY();
+          mUniverse.addPlanet(
+              mLauncher.getStartX(), mLauncher.getStartY(),
+              dx / constants::FRAMES_PER_SECOND,  // Pixels per second
+              dy / constants::FRAMES_PER_SECOND);
+        }
 
-        mUniverse.addPlanet(
-            mLauncher.getStartX(), mLauncher.getStartY(),
-            dx / constants::FRAMES_PER_SECOND, // Pixels per second
-            dy / constants::FRAMES_PER_SECOND);
+        break;
       }
 
-      break;
-    }
-
-    default:
-      break;
+      default:
+        break;
     }
   }
 }

@@ -27,7 +27,7 @@
 #include "gravity.hpp"
 
 class Game {
-public:
+ public:
   struct GameState {
     bool run;
     bool pause;
@@ -43,7 +43,7 @@ public:
   void quit();
   void pause(bool state);
 
-private:
+ private:
   Color BACKGROUND_COLOR = {0x00, 0x00, 0x00, 0xFF};
 
   GameState mGameState;

@@ -17,11 +17,12 @@
  */
 
 #include "Universe.hpp"
-#include "gravity.hpp"
-#include "log.hpp"
 
 #include <cmath>
 #include <vector>
+
+#include "gravity.hpp"
+#include "log.hpp"
 
 Universe::Universe() { LOGVV("%s:\tUniverse constructor\n", __func__); }
 
@@ -123,18 +124,17 @@ void Universe::update() {
   LOGVV("Updating %d particles\n", mParticles.size());
 
   constexpr float G =
-      1.0 / constants::FRAMES_PER_SECOND; // Fraction of time [s]*[m/s^2]
+      1.0 / constants::FRAMES_PER_SECOND;  // Fraction of time [s]*[m/s^2]
 
   int i = 0;
   int j = 0;
 
   // Calculate net accellerations
-  float aix, aiy;      // Instantaneous accelerations
-  float d, dx, dy, d3; // Distance and cubed distance
+  float aix, aiy;       // Instantaneous accelerations
+  float d, dx, dy, d3;  // Distance and cubed distance
   for (auto pi = mParticles.begin(); pi < mParticles.end(); pi++, i++) {
     for (auto pj = mParticles.begin(); pj < mParticles.end(); pj++, j++) {
-      if (pi == pj)
-        continue;
+      if (pi == pj) continue;
 
       Particle *part_i = *pi;
       Particle *part_j = *pj;

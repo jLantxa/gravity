@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "log.hpp"
+#include "gravity.hpp"
 
 #include "Game.hpp"
-#include "gravity.hpp"
+#include "log.hpp"
 
 int main(int argc, char *argv[]) {
   int ret = 0;

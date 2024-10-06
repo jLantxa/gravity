@@ -40,7 +40,7 @@ struct Point {
 };
 
 class Particle {
-public:
+ public:
   Particle(float mass, float r, float x, float y, float vx, float vy);
   virtual ~Particle() = default;
 
@@ -59,7 +59,7 @@ public:
 };
 
 class Planet : public Particle {
-public:
+ public:
   Planet(float r, float x, float y, float vx, float vy);
   virtual ~Planet() = default;
 
@@ -68,7 +68,7 @@ public:
 };
 
 class Star : public Particle {
-public:
+ public:
   Star(float x, float y);
   virtual ~Star() = default;
 
@@ -81,7 +81,7 @@ public:
 };
 
 class Universe {
-public:
+ public:
   Universe();
   virtual ~Universe();
 
@@ -95,7 +95,7 @@ public:
 
   void reset();
 
-private:
+ private:
   std::vector<Particle *> mParticles;
 };
 

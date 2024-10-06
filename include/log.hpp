@@ -24,40 +24,40 @@
 #endif
 
 #if LOG_LEVEL >= 4
-#define LOGVV                                                                  \
-  printf("[VV] ");                                                             \
+#define LOGVV      \
+  printf("[VV] "); \
   printf
 #else
 #define LOGVV
 #endif
 
 #if LOG_LEVEL >= 3
-#define LOGV                                                                   \
-  printf("[V] ");                                                              \
+#define LOGV      \
+  printf("[V] "); \
   printf
 #else
 #define LOGV
 #endif
 
 #if LOG_LEVEL >= 2
-#define LOGD                                                                   \
-  printf("[D] ");                                                              \
+#define LOGD      \
+  printf("[D] "); \
   printf
 #else
 #define LOGD
 #endif
 
 #if LOG_LEVEL >= 1
-#define LOGI                                                                   \
-  printf("[I] ");                                                              \
+#define LOGI      \
+  printf("[I] "); \
   printf
 #else
 #define LOGI
 #endif
 
 #if LOG_LEVEL >= 0
-#define LOGE                                                                   \
-  printf("[E] ");                                                              \
+#define LOGE      \
+  printf("[E] "); \
   printf
 #else
 #define LOGE

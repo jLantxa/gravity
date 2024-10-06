@@ -20,14 +20,14 @@
 #define _LAUNCHER_HPP_
 
 class Launcher {
-private:
+ private:
   bool clicked;
   int start_x;
   int start_y;
   int end_x;
   int end_y;
 
-public:
+ public:
   Launcher();
   ~Launcher();
 

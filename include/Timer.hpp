@@ -20,13 +20,13 @@
 #define _TIMER_HPP_
 
 class Timer {
-private:
+ private:
   int startTicks;
   int pausedTicks;
   bool paused;
   bool started;
 
-public:
+ public:
   Timer();
   ~Timer();
 

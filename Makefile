@@ -57,8 +57,8 @@ INCLUDE=include
 BUILD=build
 
 COMPILER_FLAGS += \
-	-std=c++20 \
-	-O3
+	-std=c++23 \
+	-O2
 
 LINKER_FLAGS :=-lm -lSDL2 -lSDL2_gfx
 LDFLAGS += \

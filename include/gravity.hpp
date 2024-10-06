@@ -19,9 +19,9 @@
 #ifndef _GRAVITY_HPP_
 #define _GRAVITY_HPP_
 
-#include <string>
-
 #include <SDL2/SDL.h>
+
+#include <string>
 
 namespace constants {
 const std::string WINDOW_TITLE{"Gravity"};
@@ -30,7 +30,7 @@ constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 600;
 
 constexpr int FRAMES_PER_SECOND = 60;
-} // namespace constants
+}  // namespace constants
 
 struct window_params {
   const char *title;
